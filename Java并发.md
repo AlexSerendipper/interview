@@ -3,7 +3,7 @@
 * CPU处理指令速度很快，可是内存读写速度很慢，每次CPU都在等待内存的读写，代价太高，所以需要缓存
 * JMM是Java内存模型，是一个规范，对共享数据的可见性原子性有序性的规则和保障
 
-<img src="C:\Users\JH\AppData\Roaming\Typora\typora-user-images\image-20220701202234550.png" alt="image-20220701202234550" style="zoom:67%;" />
+<img src="image\image-20220701202234550.png" alt="image-20220701202234550" style="zoom:67%;" />
 
 * 关于主内存与工作内存的交互，即变量如何从主内存拷贝到工作内存、从工作内存同步回主内存，JMM
   定义了 8 种原子操作 ：
