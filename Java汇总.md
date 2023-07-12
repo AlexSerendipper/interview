@@ -1238,7 +1238,6 @@ main的主线程开始执行，就把main方法放到栈空间中，由于在栈
 (7) 如果一个变量事先没有被lock操作锁定，那就不允许对它执行unlock操作，也不允许去unlock一个被其他线程锁定的变量。
 (8) 对一个变量执行unlock操作之前，必须先把此变量同步回主内存中（执行store、write操作）
 
-<<<<<<< HEAD
 
 # 五：Redis
 
@@ -2135,4 +2134,3 @@ CountDownLatch 是基于执行时间的同步类，允许一个或多个线程�
 
 <img src="image\27.png" style="zoom:67%;" />
 
->>>>>>> 6cf5ccac690e8f67a35c69d9ed62648467df1744
