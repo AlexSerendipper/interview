@@ -1875,6 +1875,7 @@ public class SecKill_redis {
 }
 ```
 =======
+
 #  六、多线程与高并发
 #### 程序/进程/线程
 - 程序(program)：是为完成特定任务、用某种语言编写的一组指令的集合。即指一段静态的代码（qq.exe、powerpoint.exe）！
@@ -2134,3 +2135,3274 @@ CountDownLatch 是基于执行时间的同步类，允许一个或多个线程�
 
 <img src="image\27.png" style="zoom:67%;" />
 
+
+
+
+
+# 七、SSM
+
+
+
+## Spring 基础
+
+### 什么是 Spring 框架?
+
+Spring 是一款开源的轻量级 Java 开发框架，旨在提高开发人员的开发效率以及系统的可维护性。
+
+我们一般说 Spring 框架指的都是 Spring Framework，它是很多模块的集合，使用这些模块可以很方便地协助我们进行开发，比如说 Spring 支持 IoC（Inversion of Control:控制反转） 和 AOP(Aspect-Oriented Programming:面向切面编程)、可以很方便地对数据库进行访问、可以很方便地集成第三方组件（电子邮件，任务，调度，缓存等等）、对单元测试支持比较好、支持 RESTful Java 应用程序的开发。
+
+![](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/38ef122122de4375abcd27c3de8f60b4.png)
+
+Spring 最核心的思想就是不重新造轮子，开箱即用，提高开发效率。
+
+Spring 翻译过来就是春天的意思，可见其目标和使命就是为 Java 程序员带来春天啊！感动！
+
+🤐 多提一嘴：**语言的流行通常需要一个杀手级的应用，Spring 就是 Java 生态的一个杀手级的应用框架。**
+
+Spring 提供的核心功能主要是 IoC 和 AOP。学习 Spring ，一定要把 IoC 和 AOP 的核心思想搞懂！
+
+### Spring 包含的模块有哪些？
+
+Spring 各个模块的依赖关系如下：
+
+![Spring 各个模块的依赖关系](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/20200902100038.png)
+
+#### Core Container
+
+Spring 框架的核心模块，也可以说是基础模块，主要提供 IoC 依赖注入功能的支持。Spring 其他所有的功能基本都需要依赖于该模块，我们从上面那张 Spring 各个模块的依赖关系图就可以看出来。
+
+- **spring-core**：Spring 框架基本的核心工具类。
+- **spring-beans**：提供对 bean 的创建、配置和管理等功能的支持。
+- **spring-context**：提供对国际化、事件传播、资源加载等功能的支持。
+- **spring-expression**：提供对表达式语言（Spring Expression Language） SpEL 的支持，只依赖于 core 模块，不依赖于其他模块，可以单独使用。
+
+#### AOP
+
+- **spring-aspects**：该模块为与 AspectJ 的集成提供支持。
+- **spring-aop**：提供了面向切面的编程实现。
+- **spring-instrument**：提供了为 JVM 添加代理（agent）的功能。 具体来讲，它为 Tomcat 提供了一个织入代理，能够为 Tomcat 传递类文 件，就像这些文件是被类加载器加载的一样。没有理解也没关系，这个模块的使用场景非常有限。
+
+#### Data Access/Integration
+
+- **spring-jdbc**：提供了对数据库访问的抽象 JDBC。不同的数据库都有自己独立的 API 用于操作数据库，而 Java 程序只需要和 JDBC API 交互，这样就屏蔽了数据库的影响。
+- **spring-tx**：提供对事务的支持。
+- **spring-orm**：提供对 Hibernate、JPA、iBatis 等 ORM 框架的支持。
+- **spring-oxm**：提供一个抽象层支撑 OXM(Object-to-XML-Mapping)，例如：JAXB、Castor、XMLBeans、JiBX 和 XStream 等。
+- **spring-jms** : 消息服务。自 Spring Framework 4.1 以后，它还提供了对 spring-messaging 模块的继承。
+
+#### Spring Web
+
+- **spring-web**：对 Web 功能的实现提供一些最基础的支持。
+- **spring-webmvc**：提供对 Spring MVC 的实现。
+- **spring-websocket**：提供了对 WebSocket 的支持，WebSocket 可以让客户端和服务端进行双向通信。
+- **spring-webflux**：提供对 WebFlux 的支持。WebFlux 是 Spring Framework 5.0 中引入的新的响应式框架。与 Spring MVC 不同，它不需要 Servlet API，是完全异步。
+
+#### Messaging
+
+**spring-messaging** 是从 Spring4.0 开始新加入的一个模块，主要职责是为 Spring 框架集成一些基础的报文传送应用。
+
+#### Spring Test
+
+Spring 团队提倡测试驱动开发（TDD）。有了控制反转 (IoC)的帮助，单元测试和集成测试变得更简单。
+
+Spring 的测试模块对 JUnit（单元测试框架）、TestNG（类似 JUnit）、Mockito（主要用来 Mock 对象）、PowerMock（解决 Mockito 的问题比如无法模拟 final, static， private 方法）等等常用的测试框架支持的都比较好。
+
+### Spring,Spring MVC,Spring Boot 之间什么关系?
+
+很多人对 Spring,Spring MVC,Spring Boot 这三者傻傻分不清楚！这里简单介绍一下这三者，其实很简单，没有什么高深的东西。
+
+Spring 包含了多个功能模块（上面刚刚提到过），其中最重要的是 Spring-Core（主要提供 IoC 依赖注入功能的支持） 模块， Spring 中的其他模块（比如 Spring MVC）的功能实现基本都需要依赖于该模块。
+
+下图对应的是 Spring4.x 版本。目前最新的 5.x 版本中 Web 模块的 Portlet 组件已经被废弃掉，同时增加了用于异步响应式处理的 WebFlux 组件。
+
+![Spring主要模块](https://oss.javaguide.cn/github/javaguide/jvme0c60b4606711fc4a0b6faf03230247a.png)
+
+Spring MVC 是 Spring 中的一个很重要的模块，主要赋予 Spring 快速构建 MVC 架构的 Web 程序的能力。MVC 是模型(Model)、视图(View)、控制器(Controller)的简写，其核心思想是通过将业务逻辑、数据、显示分离来组织代码。
+
+![](https://oss.javaguide.cn/java-guide-blog/image-20210809181452421.png)
+
+使用 Spring 进行开发各种配置过于麻烦比如开启某些 Spring 特性时，需要用 XML 或 Java 进行显式配置。于是，Spring Boot 诞生了！
+
+Spring 旨在简化 J2EE 企业应用程序开发。Spring Boot 旨在简化 Spring 开发（减少配置文件，开箱即用！）。
+
+Spring Boot 只是简化了配置，如果你需要构建 MVC 架构的 Web 程序，你还是需要使用 Spring MVC 作为 MVC 框架，只是说 Spring Boot 帮你简化了 Spring MVC 的很多配置，真正做到开箱即用！
+
+## Spring IoC
+
+### 谈谈自己对于 Spring IoC 的了解
+
+**IoC（Inversion of Control:控制反转）** 是一种设计思想，而不是一个具体的技术实现。IoC 的思想就是将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。不过， IoC 并非 Spring 特有，在其他语言中也有应用。
+
+**为什么叫控制反转？**
+
+- **控制**：指的是对象创建（实例化、管理）的权力
+- **反转**：控制权交给外部环境（Spring 框架、IoC 容器）
+
+![IoC 图解](https://oss.javaguide.cn/java-guide-blog/frc-365faceb5697f04f31399937c059c162.png)
+
+将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。 IoC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。
+
+在实际项目中一个 Service 类可能依赖了很多其他的类，假如我们需要实例化这个 Service，你可能要每次都要搞清这个 Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IoC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+
+在 Spring 中， IoC 容器是 Spring 用来实现 IoC 的载体， IoC 容器实际上就是个 Map（key，value），Map 中存放的是各种对象。
+
+Spring 时代我们一般通过 XML 文件来配置 Bean，后来开发人员觉得 XML 文件来配置不太好，于是 SpringBoot 注解配置就慢慢开始流行起来。
+
+### 什么是 Spring Bean？
+
+简单来说，Bean 代指的就是那些被 IoC 容器所管理的对象。
+
+我们需要告诉 IoC 容器帮助我们管理哪些对象，这个是通过配置元数据来定义的。配置元数据可以是 XML 文件、注解或者 Java 配置类。
+
+```xml
+<!-- Constructor-arg with 'value' attribute -->
+<bean id="..." class="...">
+   <constructor-arg value="..."/>
+</bean>
+```
+
+下图简单地展示了 IoC 容器如何使用配置元数据来管理对象。
+
+![](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/062b422bd7ac4d53afd28fb74b2bc94d.png)
+
+`org.springframework.beans`和 `org.springframework.context` 这两个包是 IoC 实现的基础，如果想要研究 IoC 相关的源码的话，可以去看看
+
+### 将一个类声明为 Bean 的注解有哪些?
+
+- `@Component`：通用的注解，可标注任意类为 `Spring` 组件。如果一个 Bean 不知道属于哪个层，可以使用`@Component` 注解标注。
+- `@Repository` : 对应持久层即 Dao 层，主要用于数据库相关操作。
+- `@Service` : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。
+- `@Controller` : 对应 Spring MVC 控制层，主要用于接受用户请求并调用 `Service` 层返回数据给前端页面。
+
+### @Component 和 @Bean 的区别是什么？
+
+- `@Component` 注解作用于类，而`@Bean`注解作用于方法。
+- `@Component`通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中（我们可以使用 `@ComponentScan` 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。`@Bean` 注解通常是我们在标有该注解的方法中定义产生这个 bean,`@Bean`告诉了 Spring 这是某个类的实例，当我需要用它的时候还给我。
+- `@Bean` 注解比 `@Component` 注解的自定义性更强，而且很多地方我们只能通过 `@Bean` 注解来注册 bean。比如当我们引用第三方库中的类需要装配到 `Spring`容器时，则只能通过 `@Bean`来实现。
+
+`@Bean`注解使用示例：
+
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    public TransferService transferService() {
+        return new TransferServiceImpl();
+    }
+
+}
+```
+
+上面的代码相当于下面的 xml 配置
+
+```xml
+<beans>
+    <bean id="transferService" class="com.acme.TransferServiceImpl"/>
+</beans>
+```
+
+下面这个例子是通过 `@Component` 无法实现的。
+
+```java
+@Bean
+public OneService getService(status) {
+    case (status)  {
+        when 1:
+                return new serviceImpl1();
+        when 2:
+                return new serviceImpl2();
+        when 3:
+                return new serviceImpl3();
+    }
+}
+```
+
+### 注入 Bean 的注解有哪些？
+
+Spring 内置的 `@Autowired` 以及 JDK 内置的 `@Resource` 和 `@Inject` 都可以用于注入 Bean。
+
+| Annotaion    | Package                            | Source       |
+| ------------ | ---------------------------------- | ------------ |
+| `@Autowired` | `org.springframework.bean.factory` | Spring 2.5+  |
+| `@Resource`  | `javax.annotation`                 | Java JSR-250 |
+| `@Inject`    | `javax.inject`                     | Java JSR-330 |
+
+`@Autowired` 和`@Resource`使用的比较多一些。
+
+### @Autowired 和 @Resource 的区别是什么？
+
+`Autowired` 属于 Spring 内置的注解，默认的注入方式为`byType`（根据类型进行匹配），也就是说会优先根据接口类型去匹配并注入 Bean （接口的实现类）。
+
+**这会有什么问题呢？** 当一个接口存在多个实现类的话，`byType`这种方式就无法正确注入对象了，因为这个时候 Spring 会同时找到多个满足条件的选择，默认情况下它自己不知道选择哪一个。
+
+这种情况下，注入方式会变为 `byName`（根据名称进行匹配），这个名称通常就是类名（首字母小写）。就比如说下面代码中的 `smsService` 就是我这里所说的名称，这样应该比较好理解了吧。
+
+```java
+// smsService 就是我们上面所说的名称
+@Autowired
+private SmsService smsService;
+```
+
+举个例子，`SmsService` 接口有两个实现类: `SmsServiceImpl1`和 `SmsServiceImpl2`，且它们都已经被 Spring 容器所管理。
+
+```java
+// 报错，byName 和 byType 都无法匹配到 bean
+@Autowired
+private SmsService smsService;
+// 正确注入 SmsServiceImpl1 对象对应的 bean
+@Autowired
+private SmsService smsServiceImpl1;
+// 正确注入  SmsServiceImpl1 对象对应的 bean
+// smsServiceImpl1 就是我们上面所说的名称
+@Autowired
+@Qualifier(value = "smsServiceImpl1")
+private SmsService smsService;
+```
+
+我们还是建议通过 `@Qualifier` 注解来显式指定名称而不是依赖变量的名称。
+
+`@Resource`属于 JDK 提供的注解，默认注入方式为 `byName`。如果无法通过名称匹配到对应的 Bean 的话，注入方式会变为`byType`。
+
+`@Resource` 有两个比较重要且日常开发常用的属性：`name`（名称）、`type`（类型）。
+
+```java
+public @interface Resource {
+    String name() default "";
+    Class<?> type() default Object.class;
+}
+```
+
+如果仅指定 `name` 属性则注入方式为`byName`，如果仅指定`type`属性则注入方式为`byType`，如果同时指定`name` 和`type`属性（不建议这么做）则注入方式为`byType`+`byName`。
+
+```java
+// 报错，byName 和 byType 都无法匹配到 bean
+@Resource
+private SmsService smsService;
+// 正确注入 SmsServiceImpl1 对象对应的 bean
+@Resource
+private SmsService smsServiceImpl1;
+// 正确注入 SmsServiceImpl1 对象对应的 bean（比较推荐这种方式）
+@Resource(name = "smsServiceImpl1")
+private SmsService smsService;
+```
+
+简单总结一下：
+
+- `@Autowired` 是 Spring 提供的注解，`@Resource` 是 JDK 提供的注解。
+- `Autowired` 默认的注入方式为`byType`（根据类型进行匹配），`@Resource`默认注入方式为 `byName`（根据名称进行匹配）。
+- 当一个接口存在多个实现类的情况下，`@Autowired` 和`@Resource`都需要通过名称才能正确匹配到对应的 Bean。`Autowired` 可以通过 `@Qualifier` 注解来显式指定名称，`@Resource`可以通过 `name` 属性来显式指定名称。
+
+### Bean 的作用域有哪些?
+
+Spring 中 Bean 的作用域通常有下面几种：
+
+- **singleton** : IoC 容器中只有唯一的 bean 实例。Spring 中的 bean 默认都是单例的，是对单例设计模式的应用。
+- **prototype** : 每次获取都会创建一个新的 bean 实例。也就是说，连续 `getBean()` 两次，得到的是不同的 Bean 实例。
+- **request** （仅 Web 应用可用）: 每一次 HTTP 请求都会产生一个新的 bean（请求 bean），该 bean 仅在当前 HTTP request 内有效。
+- **session** （仅 Web 应用可用） : 每一次来自新 session 的 HTTP 请求都会产生一个新的 bean（会话 bean），该 bean 仅在当前 HTTP session 内有效。
+- **application/global-session** （仅 Web 应用可用）：每个 Web 应用在启动时创建一个 Bean（应用 Bean），该 bean 仅在当前应用启动时间内有效。
+- **websocket** （仅 Web 应用可用）：每一次 WebSocket 会话产生一个新的 bean。
+
+**如何配置 bean 的作用域呢？**
+
+xml 方式：
+
+```xml
+<bean id="..." class="..." scope="singleton"></bean>
+```
+
+注解方式：
+
+```java
+@Bean
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public Person personPrototype() {
+    return new Person();
+}
+```
+
+### Bean 是线程安全的吗？
+
+Spring 框架中的 Bean 是否线程安全，取决于其作用域和状态。
+
+我们这里以最常用的两种作用域 prototype 和 singleton 为例介绍。几乎所有场景的 Bean 作用域都是使用默认的 singleton ，重点关注 singleton 作用域即可。
+
+prototype 作用域下，每次获取都会创建一个新的 bean 实例，不存在资源竞争问题，所以不存在线程安全问题。singleton 作用域下，IoC 容器中只有唯一的 bean 实例，可能会存在资源竞争问题（取决于 Bean 是否有状态）。如果这个 bean 是有状态的话，那就存在线程安全问题（有状态 Bean 是指包含可变的成员变量的对象）。
+
+不过，大部分 Bean 实际都是无状态（没有定义可变的成员变量）的（比如 Dao、Service），这种情况下， Bean 是线程安全的。
+
+对于有状态单例 Bean 的线程安全问题，常见的有两种解决办法：
+
+1. 在 Bean 中尽量避免定义可变的成员变量。
+2. 在类中定义一个 `ThreadLocal` 成员变量，将需要的可变成员变量保存在 `ThreadLocal` 中（推荐的一种方式）。
+
+### Bean 的生命周期了解么?
+
+- Bean 容器找到配置文件中 Spring Bean 的定义。
+- Bean 容器利用 Java Reflection API 创建一个 Bean 的实例。
+- 如果涉及到一些属性值 利用 `set()`方法设置一些属性值。
+- 如果 Bean 实现了 `BeanNameAware` 接口，调用 `setBeanName()`方法，传入 Bean 的名字。
+- 如果 Bean 实现了 `BeanClassLoaderAware` 接口，调用 `setBeanClassLoader()`方法，传入 `ClassLoader`对象的实例。
+- 如果 Bean 实现了 `BeanFactoryAware` 接口，调用 `setBeanFactory()`方法，传入 `BeanFactory`对象的实例。
+- 与上面的类似，如果实现了其他 `*.Aware`接口，就调用相应的方法。
+- 如果有和加载这个 Bean 的 Spring 容器相关的 `BeanPostProcessor` 对象，执行`postProcessBeforeInitialization()` 方法
+- 如果 Bean 实现了`InitializingBean`接口，执行`afterPropertiesSet()`方法。
+- 如果 Bean 在配置文件中的定义包含 init-method 属性，执行指定的方法。
+- 如果有和加载这个 Bean 的 Spring 容器相关的 `BeanPostProcessor` 对象，执行`postProcessAfterInitialization()` 方法
+- 当要销毁 Bean 的时候，如果 Bean 实现了 `DisposableBean` 接口，执行 `destroy()` 方法。
+- 当要销毁 Bean 的时候，如果 Bean 在配置文件中的定义包含 destroy-method 属性，执行指定的方法。
+
+图示：
+
+![Spring Bean 生命周期](https://images.xiaozhuanlan.com/photo/2019/24bc2bad3ce28144d60d9e0a2edf6c7f.jpg)
+
+与之比较类似的中文版本:
+
+![Spring Bean 生命周期](https://images.xiaozhuanlan.com/photo/2019/b5d264565657a5395c2781081a7483e1.jpg)
+
+## Spring AOP
+
+### 谈谈自己对于 AOP 的了解
+
+AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+
+Spring AOP 就是基于动态代理的，如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 **JDK Proxy**，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 **Cglib** 生成一个被代理对象的子类来作为代理，如下图所示：
+
+![SpringAOPProcess](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/230ae587a322d6e4d09510161987d346.jpeg)
+
+当然你也可以使用 **AspectJ** ！Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。
+
+AOP 切面编程设计到的一些专业术语：
+
+| 术语              |                             含义                             |
+| :---------------- | :----------------------------------------------------------: |
+| 目标(Target)      |                         被通知的对象                         |
+| 代理(Proxy)       |             向目标对象应用通知之后创建的代理对象             |
+| 连接点(JoinPoint) |         目标对象的所属类中，定义的所有方法均为连接点         |
+| 切入点(Pointcut)  | 被切面拦截 / 增强的连接点（切入点一定是连接点，连接点不一定是切入点） |
+| 通知(Advice)      | 增强的逻辑 / 代码，也即拦截到目标对象的连接点之后要做的事情  |
+| 切面(Aspect)      |                切入点(Pointcut)+通知(Advice)                 |
+| Weaving(织入)     |       将通知应用到目标对象，进而生成代理对象的过程动作       |
+
+### Spring AOP 和 AspectJ AOP 有什么区别？
+
+**Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。** Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
+
+Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。AspectJ 相比于 Spring AOP 功能更加强大，但是 Spring AOP 相对来说更简单，
+
+如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比 Spring AOP 快很多。
+
+### AspectJ 定义的通知类型有哪些？
+
+- **Before**（前置通知）：目标对象的方法调用之前触发
+- **After** （后置通知）：目标对象的方法调用之后触发
+- **AfterReturning**（返回通知）：目标对象的方法调用完成，在返回结果值之后触发
+- **AfterThrowing**（异常通知）：目标对象的方法运行中抛出 / 触发异常后触发。AfterReturning 和 AfterThrowing 两者互斥。如果方法调用成功无异常，则会有返回值；如果方法抛出了异常，则不会有返回值。
+- **Around** （环绕通知）：编程式控制目标对象的方法调用。环绕通知是所有通知类型中可操作范围最大的一种，因为它可以直接拿到目标对象，以及要执行的方法，所以环绕通知可以任意的在目标对象的方法调用前后搞事，甚至不调用目标对象的方法
+
+### 多个切面的执行顺序如何控制？
+
+1、通常使用`@Order` 注解直接定义切面顺序
+
+```java
+// 值越小优先级越高
+@Order(3)
+@Component
+@Aspect
+public class LoggingAspect implements Ordered {
+```
+
+**2、实现`Ordered` 接口重写 `getOrder` 方法。**
+
+```java
+@Component
+@Aspect
+public class LoggingAspect implements Ordered {
+
+    // ....
+
+    @Override
+    public int getOrder() {
+        // 返回值越小优先级越高
+        return 1;
+    }
+}
+```
+
+## Spring MVC
+
+### 说说自己对于 Spring MVC 了解?
+
+MVC 是模型(Model)、视图(View)、控制器(Controller)的简写，其核心思想是通过将业务逻辑、数据、显示分离来组织代码。
+
+![](https://oss.javaguide.cn/java-guide-blog/image-20210809181452421.png)
+
+
+
+MVC 是一种设计模式，Spring MVC 是一款很优秀的 MVC 框架。Spring MVC 可以帮助我们进行更简洁的 Web 层的开发，并且它天生与 Spring 框架集成。Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层(控制层，返回数据给前台页面)。
+
+### Spring MVC 的核心组件有哪些？
+
+记住了下面这些组件，也就记住了 SpringMVC 的工作原理。
+
+- **`DispatcherServlet`**：**核心的中央处理器**，负责接收请求、分发，并给予客户端响应。
+- **`HandlerMapping`**：**处理器映射器**，根据 uri 去匹配查找能处理的 `Handler` ，并会将请求涉及到的拦截器和 `Handler` 一起封装。
+- **`HandlerAdapter`**：**处理器适配器**，根据 `HandlerMapping` 找到的 `Handler` ，适配执行对应的 `Handler`；
+- **`Handler`**：**请求处理器**，处理实际请求的处理器。
+- **`ViewResolver`**：**视图解析器**，根据 `Handler` 返回的逻辑视图 / 视图，解析并渲染真正的视图，并传递给 `DispatcherServlet` 响应客户端
+
+### SpringMVC 工作原理了解吗?
+
+**Spring MVC 原理如下图所示：**
+
+> SpringMVC 工作原理的图解我没有自己画，直接图省事在网上找了一个非常清晰直观的，原出处不明。
+
+![](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/de6d2b213f112297298f3e223bf08f28.png)
+
+**流程说明（重要）：**
+
+1. 客户端（浏览器）发送请求， `DispatcherServlet`拦截请求。
+2. `DispatcherServlet` 根据请求信息调用 `HandlerMapping` 。`HandlerMapping` 根据 uri 去匹配查找能处理的 `Handler`（也就是我们平常说的 `Controller` 控制器） ，并会将请求涉及到的拦截器和 `Handler` 一起封装。
+3. `DispatcherServlet` 调用 `HandlerAdapter`适配器执行 `Handler` 。
+4. `Handler` 完成对用户请求的处理后，会返回一个 `ModelAndView` 对象给`DispatcherServlet`，`ModelAndView` 顾名思义，包含了数据模型以及相应的视图的信息。`Model` 是返回的数据对象，`View` 是个逻辑上的 `View`。
+5. `ViewResolver` 会根据逻辑 `View` 查找实际的 `View`。
+6. `DispaterServlet` 把返回的 `Model` 传给 `View`（视图渲染）。
+7. 把 `View` 返回给请求者（浏览器）
+
+### 统一异常处理怎么做？
+
+推荐使用注解的方式统一异常处理，具体会使用到 `@ControllerAdvice` + `@ExceptionHandler` 这两个注解 。
+
+```java
+@ControllerAdvice
+@ResponseBody
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<?> handleAppException(BaseException ex, HttpServletRequest request) {
+      //......
+    }
+
+    @ExceptionHandler(value = ResourceNotFoundException.class)
+    public ResponseEntity<ErrorReponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+      //......
+    }
+}
+```
+
+这种异常处理方式下，会给所有或者指定的 `Controller` 织入异常处理的逻辑（AOP），当 `Controller` 中的方法抛出异常的时候，由被`@ExceptionHandler` 注解修饰的方法进行处理。
+
+`ExceptionHandlerMethodResolver` 中 `getMappedMethod` 方法决定了异常具体被哪个被 `@ExceptionHandler` 注解修饰的方法处理异常。
+
+```java
+@Nullable
+	private Method getMappedMethod(Class<? extends Throwable> exceptionType) {
+		List<Class<? extends Throwable>> matches = new ArrayList<>();
+    //找到可以处理的所有异常信息。mappedMethods 中存放了异常和处理异常的方法的对应关系
+		for (Class<? extends Throwable> mappedException : this.mappedMethods.keySet()) {
+			if (mappedException.isAssignableFrom(exceptionType)) {
+				matches.add(mappedException);
+			}
+		}
+    // 不为空说明有方法处理异常
+		if (!matches.isEmpty()) {
+      // 按照匹配程度从小到大排序
+			matches.sort(new ExceptionDepthComparator(exceptionType));
+      // 返回处理异常的方法
+			return this.mappedMethods.get(matches.get(0));
+		}
+		else {
+			return null;
+		}
+	}
+```
+
+从源代码看出：**`getMappedMethod()`会首先找到可以匹配处理异常的所有方法信息，然后对其进行从小到大的排序，最后取最小的那一个匹配的方法(即匹配度最高的那个)。**
+
+## Spring 框架中用到了哪些设计模式？
+
+- **工厂设计模式** : Spring 使用工厂模式通过 `BeanFactory`、`ApplicationContext` 创建 bean 对象。
+- **代理设计模式** : Spring AOP 功能的实现。
+- **单例设计模式** : Spring 中的 Bean 默认都是单例的。
+- **模板方法模式** : Spring 中 `jdbcTemplate`、`hibernateTemplate` 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
+- **包装器设计模式** : 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
+- **观察者模式:** Spring 事件驱动模型就是观察者模式很经典的一个应用。
+- **适配器模式** : Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配`Controller`。
+- ......
+
+## 拓展：设计模式详解
+
+### 控制反转(IoC)和依赖注入(DI)
+
+**IoC(Inversion of Control,控制反转)** 是 Spring 中一个非常非常重要的概念，它不是什么技术，而是一种解耦的设计思想。IoC 的主要目的是借助于“第三方”(Spring 中的 IoC 容器) 实现具有依赖关系的对象之间的解耦(IOC 容器管理对象，你只管使用即可)，从而降低代码之间的耦合度。
+
+**IoC 是一个原则，而不是一个模式，以下模式（但不限于）实现了 IoC 原则。**
+
+![ioc-patterns](https://oss.javaguide.cn/github/javaguide/ioc-patterns.png)
+
+**Spring IoC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。** IoC 容器负责创建对象，将对象连接在一起，配置这些对象，并从创建中处理这些对象的整个生命周期，直到它们被完全销毁。
+
+在实际项目中一个 Service 类如果有几百甚至上千个类作为它的底层，我们需要实例化这个 Service，你可能要每次都要搞清这个 Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IOC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+
+> 关于 Spring IOC 的理解，推荐看这一下知乎的一个回答：<https://www.zhihu.com/question/23277575/answer/169698662> ，非常不错。
+
+**控制反转怎么理解呢?** 举个例子："对象 a 依赖了对象 b，当对象 a 需要使用 对象 b 的时候必须自己去创建。但是当系统引入了 IOC 容器后， 对象 a 和对象 b 之前就失去了直接的联系。这个时候，当对象 a 需要使用 对象 b 的时候， 我们可以指定 IOC 容器去创建一个对象 b 注入到对象 a 中"。 对象 a 获得依赖对象 b 的过程,由主动行为变为了被动行为，控制权反转，这就是控制反转名字的由来。
+
+**DI(Dependency Inject,依赖注入)是实现控制反转的一种设计模式，依赖注入就是将实例变量传入到一个对象中去。**
+
+### 工厂设计模式
+
+Spring 使用工厂模式可以通过 `BeanFactory` 或 `ApplicationContext` 创建 bean 对象。
+
+**两者对比：**
+
+- `BeanFactory`：延迟注入(使用到某个 bean 的时候才会注入),相比于`ApplicationContext` 来说会占用更少的内存，程序启动速度更快。
+- `ApplicationContext`：容器启动的时候，不管你用没用到，一次性创建所有 bean 。`BeanFactory` 仅提供了最基本的依赖注入支持，`ApplicationContext` 扩展了 `BeanFactory` ,除了有`BeanFactory`的功能还有额外更多功能，所以一般开发人员使用`ApplicationContext`会更多。
+
+`ApplicationContext` 的三个实现类：
+
+1. `ClassPathXmlApplication`：把上下文文件当成类路径资源。
+2. `FileSystemXmlApplication`：从文件系统中的 XML 文件载入上下文定义信息。
+3. `XmlWebApplicationContext`：从 Web 系统中的 XML 文件载入上下文定义信息。
+
+Example:
+
+```java
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+public class App {
+	public static void main(String[] args) {
+		ApplicationContext context = new FileSystemXmlApplicationContext(
+				"C:/work/IOC Containers/springframework.applicationcontext/src/main/resources/bean-factory-config.xml");
+
+		HelloApplicationContext obj = (HelloApplicationContext) context.getBean("helloApplicationContext");
+		obj.getMsg();
+	}
+}
+```
+
+### 单例设计模式
+
+在我们的系统中，有一些对象其实我们只需要一个，比如说：线程池、缓存、对话框、注册表、日志对象、充当打印机、显卡等设备驱动程序的对象。事实上，这一类对象只能有一个实例，如果制造出多个实例就可能会导致一些问题的产生，比如：程序的行为异常、资源使用过量、或者不一致性的结果。
+
+**使用单例模式的好处** :
+
+- 对于频繁使用的对象，可以省略创建对象所花费的时间，这对于那些重量级对象而言，是非常可观的一笔系统开销；
+- 由于 new 操作的次数减少，因而对系统内存的使用频率也会降低，这将减轻 GC 压力，缩短 GC 停顿时间。
+
+**Spring 中 bean 的默认作用域就是 singleton(单例)的。** 除了 singleton 作用域，Spring 中 bean 还有下面几种作用域：
+
+- **prototype** : 每次获取都会创建一个新的 bean 实例。也就是说，连续 `getBean()` 两次，得到的是不同的 Bean 实例。
+- **request** （仅 Web 应用可用）: 每一次 HTTP 请求都会产生一个新的 bean（请求 bean），该 bean 仅在当前 HTTP request 内有效。
+- **session** （仅 Web 应用可用） : 每一次来自新 session 的 HTTP 请求都会产生一个新的 bean（会话 bean），该 bean 仅在当前 HTTP session 内有效。
+- **application/global-session** （仅 Web 应用可用）：每个 Web 应用在启动时创建一个 Bean（应用 Bean），，该 bean 仅在当前应用启动时间内有效。
+- **websocket** （仅 Web 应用可用）：每一次 WebSocket 会话产生一个新的 bean。
+
+Spring 通过 `ConcurrentHashMap` 实现单例注册表的特殊方式实现单例模式。
+
+Spring 实现单例的核心代码如下：
+
+```java
+// 通过 ConcurrentHashMap（线程安全） 实现单例注册表
+private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(64);
+
+public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
+        Assert.notNull(beanName, "'beanName' must not be null");
+        synchronized (this.singletonObjects) {
+            // 检查缓存中是否存在实例
+            Object singletonObject = this.singletonObjects.get(beanName);
+            if (singletonObject == null) {
+                //...省略了很多代码
+                try {
+                    singletonObject = singletonFactory.getObject();
+                }
+                //...省略了很多代码
+                // 如果实例对象在不存在，我们注册到单例注册表中。
+                addSingleton(beanName, singletonObject);
+            }
+            return (singletonObject != NULL_OBJECT ? singletonObject : null);
+        }
+    }
+    //将对象添加到单例注册表
+    protected void addSingleton(String beanName, Object singletonObject) {
+            synchronized (this.singletonObjects) {
+                this.singletonObjects.put(beanName, (singletonObject != null ? singletonObject : NULL_OBJECT));
+
+            }
+        }
+}
+```
+
+**单例 Bean 存在线程安全问题吗？**
+
+大部分时候我们并没有在项目中使用多线程，所以很少有人会关注这个问题。单例 Bean 存在线程问题，主要是因为当多个线程操作同一个对象的时候是存在资源竞争的。
+
+常见的有两种解决办法：
+
+1. 在 Bean 中尽量避免定义可变的成员变量。
+2. 在类中定义一个 `ThreadLocal` 成员变量，将需要的可变成员变量保存在 `ThreadLocal` 中（推荐的一种方式）。
+
+不过，大部分 Bean 实际都是无状态（没有实例变量）的（比如 Dao、Service），这种情况下， Bean 是线程安全的。
+
+### 代理设计模式
+
+#### 代理模式在 AOP 中的应用
+
+**AOP(Aspect-Oriented Programming，面向切面编程)** 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+
+**Spring AOP 就是基于动态代理的**，如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 **JDK Proxy** 去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 **Cglib** 生成一个被代理对象的子类来作为代理，如下图所示：
+
+![SpringAOPProcess](https://oss.javaguide.cn/github/javaguide/SpringAOPProcess.jpg)
+
+当然，你也可以使用 AspectJ ,Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。
+
+使用 AOP 之后我们可以把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。我们需要增加新功能时也方便，这样也提高了系统扩展性。日志功能、事务管理等等场景都用到了 AOP 。
+
+#### Spring AOP 和 AspectJ AOP 有什么区别?
+
+**Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。** Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
+
+Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。AspectJ 相比于 Spring AOP 功能更加强大，但是 Spring AOP 相对来说更简单，
+
+如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比 Spring AOP 快很多。
+
+### 模板方法
+
+模板方法模式是一种行为设计模式，它定义一个操作中的算法的骨架，而将一些步骤延迟到子类中。 模板方法使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤的实现方式。
+
+```java
+public abstract class Template {
+    //这是我们的模板方法
+    public final void TemplateMethod(){
+        PrimitiveOperation1();
+        PrimitiveOperation2();
+        PrimitiveOperation3();
+    }
+
+    protected void  PrimitiveOperation1(){
+        //当前类实现
+    }
+
+    //被子类实现的方法
+    protected abstract void PrimitiveOperation2();
+    protected abstract void PrimitiveOperation3();
+
+}
+public class TemplateImpl extends Template {
+
+    @Override
+    public void PrimitiveOperation2() {
+        //当前类实现
+    }
+
+    @Override
+    public void PrimitiveOperation3() {
+        //当前类实现
+    }
+}
+
+```
+
+Spring 中 `JdbcTemplate`、`HibernateTemplate` 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。一般情况下，我们都是使用继承的方式来实现模板模式，但是 Spring 并没有使用这种方式，而是使用 Callback 模式与模板方法模式配合，既达到了代码复用的效果，同时增加了灵活性。
+
+### 观察者模式
+
+观察者模式是一种对象行为型模式。它表示的是一种对象与对象之间具有依赖关系，当一个对象发生改变的时候，依赖这个对象的所有对象也会做出反应。Spring 事件驱动模型就是观察者模式很经典的一个应用。Spring 事件驱动模型非常有用，在很多场景都可以解耦我们的代码。比如我们每次添加商品的时候都需要重新更新商品索引，这个时候就可以利用观察者模式来解决这个问题。
+
+### Spring 事件驱动模型中的三种角色
+
+#### 事件角色
+
+`ApplicationEvent` (`org.springframework.context`包下)充当事件的角色,这是一个抽象类，它继承了`java.util.EventObject`并实现了 `java.io.Serializable`接口。
+
+Spring 中默认存在以下事件，他们都是对 `ApplicationContextEvent` 的实现(继承自`ApplicationContextEvent`)：
+
+- `ContextStartedEvent`：`ApplicationContext` 启动后触发的事件;
+- `ContextStoppedEvent`：`ApplicationContext` 停止后触发的事件;
+- `ContextRefreshedEvent`：`ApplicationContext` 初始化或刷新完成后触发的事件;
+- `ContextClosedEvent`：`ApplicationContext` 关闭后触发的事件。
+
+![ApplicationEvent-Subclass](https://oss.javaguide.cn/github/javaguide/ApplicationEvent-Subclass.png)
+
+#### 事件监听者角色
+
+`ApplicationListener` 充当了事件监听者角色，它是一个接口，里面只定义了一个 `onApplicationEvent（）`方法来处理`ApplicationEvent`。`ApplicationListener`接口类源码如下，可以看出接口定义看出接口中的事件只要实现了 `ApplicationEvent`就可以了。所以，在 Spring 中我们只要实现 `ApplicationListener` 接口的 `onApplicationEvent()` 方法即可完成监听事件
+
+```java
+package org.springframework.context;
+import java.util.EventListener;
+@FunctionalInterface
+public interface ApplicationListener<E extends ApplicationEvent> extends EventListener {
+    void onApplicationEvent(E var1);
+}
+```
+
+#### 事件发布者角色
+
+`ApplicationEventPublisher` 充当了事件的发布者，它也是一个接口。
+
+```java
+@FunctionalInterface
+public interface ApplicationEventPublisher {
+    default void publishEvent(ApplicationEvent event) {
+        this.publishEvent((Object)event);
+    }
+
+    void publishEvent(Object var1);
+}
+
+```
+
+`ApplicationEventPublisher` 接口的`publishEvent（）`这个方法在`AbstractApplicationContext`类中被实现，阅读这个方法的实现，你会发现实际上事件真正是通过`ApplicationEventMulticaster`来广播出去的。具体内容过多，就不在这里分析了，后面可能会单独写一篇文章提到。
+
+### Spring 的事件流程总结
+
+1. 定义一个事件: 实现一个继承自 `ApplicationEvent`，并且写相应的构造函数；
+2. 定义一个事件监听者：实现 `ApplicationListener` 接口，重写 `onApplicationEvent()` 方法；
+3. 使用事件发布者发布消息: 可以通过 `ApplicationEventPublisher` 的 `publishEvent()` 方法发布消息。
+
+Example:
+
+```java
+// 定义一个事件,继承自ApplicationEvent并且写相应的构造函数
+public class DemoEvent extends ApplicationEvent{
+    private static final long serialVersionUID = 1L;
+
+    private String message;
+
+    public DemoEvent(Object source,String message){
+        super(source);
+        this.message = message;
+    }
+
+    public String getMessage() {
+         return message;
+          }
+
+
+// 定义一个事件监听者,实现ApplicationListener接口，重写 onApplicationEvent() 方法；
+@Component
+public class DemoListener implements ApplicationListener<DemoEvent>{
+
+    //使用onApplicationEvent接收消息
+    @Override
+    public void onApplicationEvent(DemoEvent event) {
+        String msg = event.getMessage();
+        System.out.println("接收到的信息是："+msg);
+    }
+
+}
+// 发布事件，可以通过ApplicationEventPublisher  的 publishEvent() 方法发布消息。
+@Component
+public class DemoPublisher {
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    public void publish(String message){
+        //发布事件
+        applicationContext.publishEvent(new DemoEvent(this, message));
+    }
+}
+
+```
+
+当调用 `DemoPublisher` 的 `publish()` 方法的时候，比如 `demoPublisher.publish("你好")` ，控制台就会打印出:`接收到的信息是：你好` 。
+
+### 适配器模式
+
+适配器模式(Adapter Pattern) 将一个接口转换成客户希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作。
+
+#### Spring AOP 中的适配器模式
+
+我们知道 Spring AOP 的实现是基于代理模式，但是 Spring AOP 的增强或通知(Advice)使用到了适配器模式，与之相关的接口是`AdvisorAdapter` 。
+
+Advice 常用的类型有：`BeforeAdvice`（目标方法调用前,前置通知）、`AfterAdvice`（目标方法调用后,后置通知）、`AfterReturningAdvice`(目标方法执行结束后，return 之前)等等。每个类型 Advice（通知）都有对应的拦截器:`MethodBeforeAdviceInterceptor`、`AfterReturningAdviceInterceptor`、`ThrowsAdviceInterceptor` 等等。
+
+Spring 预定义的通知要通过对应的适配器，适配成 `MethodInterceptor` 接口(方法拦截器)类型的对象（如：`MethodBeforeAdviceAdapter` 通过调用 `getInterceptor` 方法，将 `MethodBeforeAdvice` 适配成 `MethodBeforeAdviceInterceptor` ）。
+
+#### Spring MVC 中的适配器模式
+
+在 Spring MVC 中，`DispatcherServlet` 根据请求信息调用 `HandlerMapping`，解析请求对应的 `Handler`。解析到对应的 `Handler`（也就是我们平常说的 `Controller` 控制器）后，开始由`HandlerAdapter` 适配器处理。`HandlerAdapter` 作为期望接口，具体的适配器实现类用于对目标类进行适配，`Controller` 作为需要适配的类。
+
+**为什么要在 Spring MVC 中使用适配器模式？**
+
+Spring MVC 中的 `Controller` 种类众多，不同类型的 `Controller` 通过不同的方法来对请求进行处理。如果不利用适配器模式的话，`DispatcherServlet` 直接获取对应类型的 `Controller`，需要的自行来判断，像下面这段代码一样：
+
+```java
+if(mappedHandler.getHandler() instanceof MultiActionController){
+   ((MultiActionController)mappedHandler.getHandler()).xxx
+}else if(mappedHandler.getHandler() instanceof XXX){
+    ...
+}else if(...){
+   ...
+}
+```
+
+假如我们再增加一个 `Controller`类型就要在上面代码中再加入一行 判断语句，这种形式就使得程序难以维护，也违反了设计模式中的开闭原则 – 对扩展开放，对修改关闭。
+
+### 装饰者模式
+
+装饰者模式可以动态地给对象添加一些额外的属性或行为。相比于使用继承，装饰者模式更加灵活。简单点儿说就是当我们需要修改原有的功能，但我们又不愿直接去修改原有的代码时，设计一个 Decorator 套在原有代码外面。其实在 JDK 中就有很多地方用到了装饰者模式，比如 `InputStream`家族，`InputStream` 类下有 `FileInputStream` (读取文件)、`BufferedInputStream` (增加缓存,使读取文件速度大大提升)等子类都在不修改`InputStream` 代码的情况下扩展了它的功能。
+
+![装饰者模式示意图](https://oss.javaguide.cn/github/javaguide/Decorator.jpg)
+
+Spring 中配置 DataSource 的时候，DataSource 可能是不同的数据库和数据源。我们能否根据客户的需求在少修改原有类的代码下动态切换不同的数据源？这个时候就要用到装饰者模式(这一点我自己还没太理解具体原理)。Spring 中用到的包装器模式在类名上含有 `Wrapper`或者 `Decorator`。这些类基本上都是动态地给一个对象添加一些额外的职责
+
+## Spring 事务
+
+### Spring 管理事务的方式有几种？
+
+- **编程式事务**：在代码中硬编码(不推荐使用) : 通过 `TransactionTemplate`或者 `TransactionManager` 手动管理事务，实际应用中很少使用，但是对于你理解 Spring 事务管理原理有帮助。
+- **声明式事务**：在 XML 配置文件中配置或者直接基于注解（推荐使用） : 实际是通过 AOP 实现（基于`@Transactional` 的全注解方式使用最多）
+
+### Spring 事务中哪几种事务传播行为?
+
+**事务传播行为是为了解决业务层方法之间互相调用的事务问题**。
+
+当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行。
+
+正确的事务传播行为可能的值如下:
+
+**1.`TransactionDefinition.PROPAGATION_REQUIRED`**
+
+使用的最多的一个事务传播行为，我们平时经常使用的`@Transactional`注解默认使用就是这个事务传播行为。如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。
+
+**`2.TransactionDefinition.PROPAGATION_REQUIRES_NEW`**
+
+创建一个新的事务，如果当前存在事务，则把当前事务挂起。也就是说不管外部方法是否开启事务，`Propagation.REQUIRES_NEW`修饰的内部方法会新开启自己的事务，且开启的事务相互独立，互不干扰。
+
+**3.`TransactionDefinition.PROPAGATION_NESTED`**
+
+如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于`TransactionDefinition.PROPAGATION_REQUIRED`。
+
+**4.`TransactionDefinition.PROPAGATION_MANDATORY`**
+
+如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。（mandatory：强制性）
+
+这个使用的很少。
+
+若是错误的配置以下 3 种事务传播行为，事务将不会发生回滚：
+
+- **`TransactionDefinition.PROPAGATION_SUPPORTS`**: 如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。
+- **`TransactionDefinition.PROPAGATION_NOT_SUPPORTED`**: 以非事务方式运行，如果当前存在事务，则把当前事务挂起。
+- **`TransactionDefinition.PROPAGATION_NEVER`**: 以非事务方式运行，如果当前存在事务，则抛出异常。
+
+### Spring 事务中的隔离级别有哪几种?
+
+和事务传播行为这块一样，为了方便使用，Spring 也相应地定义了一个枚举类：`Isolation`
+
+```java
+public enum Isolation {
+
+    DEFAULT(TransactionDefinition.ISOLATION_DEFAULT),
+
+    READ_UNCOMMITTED(TransactionDefinition.ISOLATION_READ_UNCOMMITTED),
+
+    READ_COMMITTED(TransactionDefinition.ISOLATION_READ_COMMITTED),
+
+    REPEATABLE_READ(TransactionDefinition.ISOLATION_REPEATABLE_READ),
+
+    SERIALIZABLE(TransactionDefinition.ISOLATION_SERIALIZABLE);
+
+    private final int value;
+
+    Isolation(int value) {
+        this.value = value;
+    }
+
+    public int value() {
+        return this.value;
+    }
+
+}
+```
+
+下面我依次对每一种事务隔离级别进行介绍：
+
+- **`TransactionDefinition.ISOLATION_DEFAULT`** :使用后端数据库默认的隔离级别，MySQL 默认采用的 `REPEATABLE_READ` 隔离级别 Oracle 默认采用的 `READ_COMMITTED` 隔离级别.
+- **`TransactionDefinition.ISOLATION_READ_UNCOMMITTED`** :最低的隔离级别，使用这个隔离级别很少，因为它允许读取尚未提交的数据变更，**可能会导致脏读、幻读或不可重复读**
+- **`TransactionDefinition.ISOLATION_READ_COMMITTED`** : 允许读取并发事务已经提交的数据，**可以阻止脏读，但是幻读或不可重复读仍有可能发生**
+- **`TransactionDefinition.ISOLATION_REPEATABLE_READ`** : 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，**可以阻止脏读和不可重复读，但幻读仍有可能发生。**
+- **`TransactionDefinition.ISOLATION_SERIALIZABLE`** : 最高的隔离级别，完全服从 ACID 的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，**该级别可以防止脏读、不可重复读以及幻读**。但是这将严重影响程序的性能。通常情况下也不会用到该级别。
+
+### @Transactional(rollbackFor = Exception.class)注解了解吗？
+
+`Exception` 分为运行时异常 `RuntimeException` 和非运行时异常。事务管理对于企业应用来说是至关重要的，即使出现异常情况，它也可以保证数据的一致性。
+
+当 `@Transactional` 注解作用于类上时，该类的所有 public 方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。
+
+在 `@Transactional` 注解中如果不配置`rollbackFor`属性,那么事务只会在遇到`RuntimeException`的时候才会回滚，加上 `rollbackFor=Exception.class`,可以让事务在遇到非运行时异常时也回滚。
+
+## Spring Data JPA
+
+JPA 重要的是实战，这里仅对小部分知识点进行总结。
+
+### 如何使用 JPA 在数据库中非持久化一个字段？
+
+假如我们有下面一个类：
+
+```java
+@Entity(name="USER")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name="USER_NAME")
+    private String userName;
+
+    @Column(name="PASSWORD")
+    private String password;
+
+    private String secrect;
+
+}
+```
+
+如果我们想让`secrect` 这个字段不被持久化，也就是不被数据库存储怎么办？我们可以采用下面几种方法：
+
+```java
+static String transient1; // not persistent because of static
+final String transient2 = "Satish"; // not persistent because of final
+transient String transient3; // not persistent because of transient
+@Transient
+String transient4; // not persistent because of @Transient
+```
+
+一般使用后面两种方式比较多，我个人使用注解的方式比较多。
+
+### JPA 的审计功能是做什么的？有什么用？
+
+审计功能主要是帮助我们记录数据库操作的具体行为比如某条记录是谁创建的、什么时间创建的、最后修改人是谁、最后修改时间是什么时候。
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@MappedSuperclass
+@EntityListeners(value = AuditingEntityListener.class)
+public abstract class AbstractAuditBase {
+
+    @CreatedDate
+    @Column(updatable = false)
+    @JsonIgnore
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Instant updatedAt;
+
+    @CreatedBy
+    @Column(updatable = false)
+    @JsonIgnore
+    private String createdBy;
+
+    @LastModifiedBy
+    @JsonIgnore
+    private String updatedBy;
+}
+```
+
+- `@CreatedDate`: 表示该字段为创建时间字段，在这个实体被 insert 的时候，会设置值
+
+- `@CreatedBy` :表示该字段为创建人，在这个实体被 insert 的时候，会设置值
+
+  `@LastModifiedDate`、`@LastModifiedBy`同理。
+
+### 实体之间的关联关系注解有哪些？
+
+- `@OneToOne ` : 一对一。
+- `@ManyToMany`：多对多。
+- `@OneToMany` : 一对多。
+- `@ManyToOne`：多对一。
+
+利用 `@ManyToOne` 和 `@OneToMany` 也可以表达多对多的关联关系。
+
+## Spring Security
+
+Spring Security 重要的是实战，这里仅对小部分知识点进行总结。
+
+### 有哪些控制请求访问权限的方法？
+
+![](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/image-20220728201854641.png)
+
+- `permitAll()`：无条件允许任何形式访问，不管你登录还是没有登录。
+- `anonymous()`：允许匿名访问，也就是没有登录才可以访问。
+- `denyAll()`：无条件决绝任何形式的访问。
+- `authenticated()`：只允许已认证的用户访问。
+- `fullyAuthenticated()`：只允许已经登录或者通过 remember-me 登录的用户访问。
+- `hasRole(String)` : 只允许指定的角色访问。
+- `hasAnyRole(String)	` : 指定一个或者多个角色，满足其一的用户即可访问。
+- `hasAuthority(String)`：只允许具有指定权限的用户访问
+- `hasAnyAuthority(String)`：指定一个或者多个权限，满足其一的用户即可访问。
+- `hasIpAddress(String)` : 只允许指定 ip 的用户访问。
+
+### hasRole 和 hasAuthority 有区别吗？
+
+从代码上来说，hasRole 和 hasAuthority 写代码时前缀不同，但是最终执行是一样的；设计上来说，role 和 authority 这是两个层面的权限设计思路，一个是角色，一个是权限，角色是权限的集合
+
+### 如何对密码进行加密？
+
+如果我们需要保存密码这类敏感数据到数据库的话，需要先加密再保存。
+
+Spring Security 提供了多种加密算法的实现，开箱即用，非常方便。这些加密算法实现类的父类是 `PasswordEncoder` ，如果你想要自己实现一个加密算法的话，也需要继承 `PasswordEncoder`。
+
+`PasswordEncoder` 接口一共也就 3 个必须实现的方法。
+
+```java
+public interface PasswordEncoder {
+    // 加密也就是对原始密码进行编码
+    String encode(CharSequence var1);
+    // 比对原始密码和数据库中保存的密码
+    boolean matches(CharSequence var1, String var2);
+    // 判断加密密码是否需要再次进行加密，默认返回 false
+    default boolean upgradeEncoding(String encodedPassword) {
+        return false;
+    }
+}
+```
+
+![](https://oss.javaguide.cn/github/javaguide/system-design/framework/spring/image-20220728183540954.png)
+
+官方推荐使用基于 bcrypt 强哈希函数的加密算法实现类。
+
+### 如何优雅更换系统使用的加密算法？
+
+如果我们在开发过程中，突然发现现有的加密算法无法满足我们的需求，需要更换成另外一个加密算法，这个时候应该怎么办呢？
+
+推荐的做法是通过 `DelegatingPasswordEncoder` 兼容多种不同的密码加密方案，以适应不同的业务需求。
+
+从名字也能看出来，`DelegatingPasswordEncoder` 其实就是一个代理类，并非是一种全新的加密算法，它做的事情就是代理上面提到的加密算法实现类。在 Spring Security 5.0 之后，默认就是基于 `DelegatingPasswordEncoder` 进行密码加密的。
+
+### AOP就是IOC的一个扩展实现
+
+![image-20220709170727633](image/Java汇总/image-20220709170727633.png)
+
+![image-20220723215057561](image/Java汇总/image-20220723215057561.png)
+
+![image-20220723210520404](image/Java汇总/image-20220723210520404.png)
+
+![image-20220724152247228](image/Java汇总/image-20220724152247228.png)
+
+ 
+
+![image-20220724151722306](image/Java汇总/image-20220724151722306.png)
+
+
+
+### refresh的13个方法
+
+* 先看有没有beanfactory对象没有的话直接创建 new一个DefaultListableBeanFactory对象叫beanFactory，有的话销毁了再创建bean工厂
+
+* 此时xml读入后   这个BeanDefinition对象都是默认值
+
+* 下面加载beanFactory得到BeanDefinition对象此时还是原始值${jdbc.url}，还没替换
+
+* 此时执行invokeBeanFactoryPostProcessor增强器，完成替换值 url username都替换了
+
+* 可以放监听器 ，监听事件 在我实例化前准备工作要做到位
+
+* 国际化处理：切换语言的
+
+* 初始化多播器 就是监听器
+
+* 这时候可以单例化的实例操作了 非懒加载
+
+* 反射开始 docreatebean方法 Constructor ctor = clazz.getDeclareConstructor();Object obj =  ctor.newInstance();
+
+* 对象实例化好了 开始填充属性 把配置文件里的属性值填充进来 譬如你名字叫张三就填充张三
+
+* 下面进行实现aware接口，实现容器对象的赋值
+
+* 下面进行before增强 
+
+* init方法
+
+* after 增强--- AOP是一个小功能
+
+* 结束可以直接拿对象 getbean（）方法
+
+* 最后 结束了 init-destory销毁
+
+  ![image-20220724151511892](image/Java汇总/image-20220724151511892.png)
+
+上图解析：首先xml和注解通过一系列操作得到BeanDefinition的对象此时是原始值也就是占位符未被替换，经过BeanFactoryPostProcessor将值替换得到最终的BeanDefinition对象
+
+![image-20220723214300155](image/Java汇总/image-20220723214300155.png)
+
+![image-20220723214358993](image/Java汇总/image-20220723214358993.png)
+
+![image-20220723214424861](image/Java汇总/image-20220723214424861.png)
+
+### 理解bean的生命周期
+
+* 实例化 分配内存、属性默认值
+* 用户自定义属性（set get）
+* 容器对象赋值 通过实现aware接口来完成set get赋值
+* 下面全是spring扩展实现 初始化前置处理方法
+* 初始化（不是前一个初始化） 应该叫做执行初始化调用方法
+* 后置处理方法---->AOP
+* 使用对象
+* 销毁对象
+
+![image-20220723214617922](image/Java汇总/image-20220723214617922.png)
+
+FactoryBean你可以按照自己想的方式去生成对象new 代理 反射生成对象，而不需要去经历Bean的生命周期
+
+![image-20220724170511320](image/Java汇总/image-20220724170511320.png)
+
+### 什么是Spring IOC容器
+
+**IOC即控制反转，总结而言就是借助IOC容器实现对象之间的解耦并完成对象的创建、配置它们并管理它们的完整生命周期。**IOC的实现方式有依赖注入和依赖查找，依赖查找基本用的很少，所以IOC又叫依赖注入，依赖注入。依赖注入指对象被动地接受依赖类而不用自己主动去找，对象不是从容器中查找它依赖的类，而是在容器实例化对象时主动将它依赖的类注入给它。假设一个 Car 类需要一个 Engine 的对象，那么一般需要需要手动 new 一个 Engine，利用 IoC 就只需要定义一个私有的 Engine 类型的成员变量，容器会在运行时自动创建一个 Engine 的实例对象并将引用自动注入给成员变量。  
+
+* 通过xml文件经过抽象接口（定义读取配置文件的规范）BeanDefinationReader（抽象接口）定义信息解析出BeanDefinaition
+
+![image-20220724150311509](image/Java汇总/image-20220724150311509.png)
+
+BeanDefinationReader实现类，能够实现对应的功能，解析出BeanDefination
+
+**过程**
+
+* xml配置文件，配置创建的对象（在spring配置文件中，使用bean标签，标签里面添加对应属性，就可以实现对象的创建，默认是无参构造函数）
+
+  * bean中的属性
+    * id属性：唯一标识（不允许重复）
+    * class属性：类的全路径（包类路径）
+
+  ~~~~java
+  <bean id = "userdao" class = "com.atguigu.UserDao"></bean>
+  ~~~~
+
+* 创建工厂类（直接当作容器 直接通过beanfactory获得对象，ApplicationContext继承beanfactory）
+
+![image-20220718140008187](image/Java汇总/image-20220718140008187.png)
+
+* 通过反射读取到字节码，也就是.class文件，进行对象的创建 先获取class对象 Class.forName("完全限定名");或者对象.getClass()或者类.class             下面是第一种                  clazz.newInstance();
+
+* 还有    Constructor ctor = clazz.getDeclareConstructor();Object obj =  ctor.newInstance();
+
+  ![image-20220724151511892](image/image-20220724151511892.png)
+
+~~~java
+class UserFactory{
+	public static UserDao getDao()
+    {
+    	String classValue = class属性值//1.xml解析
+        Class clazz = Class.forName(classValue);
+        return (UserDao)clazz.newInstance();
+    }
+}
+~~~
+
+**接口**
+
+IOC思想基于IOC容器完成，IOC容器的底层就是对象工厂（beanfactory里有很多抽象类和接口）
+
+Spring提供IOC容器实现的两个方式（接口）
+
+* BeanFactory：IOC容器基本实现，是Spring内部的使用接口，不提供开发人员使用
+* ApplicationContext：BeanFactory的子接口，提供更多更强大的功能，由开发人员使用
+
+Spring 时代我们一般通过 XML 文件来配置 Bean，后来开发人员觉得 XML 文件来配置不太好，于是 SpringBoot 注解配置就慢慢开始流行起来。
+
+### 什么是依赖注入？可以通过多少种方式完成依赖注入？
+
+在依赖注入中，您不必创建对象，但必须描述如何创建它们。您不是直接在代码中将组件和服务连接在一起，而是描述配置文件中哪些组件需要哪些服务。由loC容器将它们装配在一起。通常，依赖注入可以通过三种方式完成，即: 
+
+解决的问题就是：业务层需要调用持久层的方法，不想编写程序来写出依赖关系，而想通过Spring来维护，通过spring自动把持久层对象传入业务层，不用我们自己去获取，去把UserDao注入到UserService
+
+* 构造函数注入（有参构造）
+* setter注入
+
+<img src="image/Java汇总/image-20220718143442348.png" alt="image-20220718143442348" style="zoom:80%;" />
+
+![image-20220718143519150](image/Java汇总/image-20220718143519150.png)
+
+* 接口注入
+* 在SpringFramework中，仅使用构造函数和setter注入。
+
+### 区分BeanFactory和ApplicationContext？
+
+| BeanFactory                | ApplicationContext       |
+| -------------------------- | ------------------------ |
+| 它使用懒加载               | 它使用即时加载           |
+| 它使用语法显示提供资源对象 | 它自己创建和管理资源对象 |
+| 不支持基于依赖的注解       | 支持依赖的注解           |
+
+BeanFactory和ApplicationContext的优缺点分析:
+**BeanFactory的优缺点:**
+
+* 优点:应用启动的时候占用资源很少，对资源要求较高的应用，比较有优势;
+* 缺点:运行速度会相对来说慢一些。而且有可能会出现空指针异常的错误，而且通过Bean工厂创建的Bean生命周期会简单一些。
+
+**ApplicationContext的优缺点:**（ClassPathXmlApplication实现类，getbean（））
+
+* 优点:所有的Bean在启动的时候都进行了加载，系统运行的速度快;在系统启动的时候，可以发现系统中的配置问题。
+* 缺点:把费时的操作放到系统启动中完成，所有的对象都可以预加载，缺点就是内存占用较大。
+
+####  Bean 的作用范围
+
+​	通过 scope 属性指定 bean 的作用范围，包括：
+​		① singleton：单例模式，是默认作用域，不管收到多少 Bean 请求每个容器中只有一个唯一的 Bean实例。
+​		② prototype：原型模式，和 singleton 相反，每次 Bean 请求都会创建一个新的实例，多例的。
+​		③ request：每次 HTTP 请求都会创建一个新的 Bean 并把它放到 request 域中，在请求完成后 Bean会失效并被垃圾收集器回收。
+​		④ session：和 request 类似，确保每个 session 中有一个 Bean 实例，session 过期后 bean 会随之失效。
+​		⑤ global session：当应用部署在 Portlet 容器时，如果想让所有 Portlet 共用全局存储变量，那么该变量需要存储在 global session 中。
+
+#### Bean 的生命周期
+
+* (1)通过构造器创建bean实例(无参数构造) 
+* (2)为bean的属性设置值和对其他bean引用(调用set方法)。
+* (3)调用bean的初始化的方法(在xml中需要进行配置初始化的方法init-Method)。
+* (4) bean可以使用了(对象获取到了)
+* (5)当容器关闭时候，调用bean的销毁的方法(需要进行配置销毁的方法)destroy-method属性 
+* ![image-20220718141756474](image/Java汇总/image-20220718141756474.png)
+
+#### 数据源（Druid）
+
+* 提高程序性能
+* 实例化数据源    初始化部分连接资源
+* 使用获取
+* 用完还回去
+* 步骤
+  * 导入数据源的坐标和数据库驱动 坐标
+  * 创建数据源对象
+  * 设置数据源
+
+#### Spring如何解决循环依赖
+
+![image-20220724182955667](image/Java汇总/image-20220724182955667.png)
+
+* 三级缓存，提前暴露对象 AOP
+
+* 总：循环依赖问题 A依赖B B依赖A
+
+* 分：说明bean的创建过程：实例化 初始化  （属性赋值）
+
+* 打断闭环操作 1先创建A对象 实例化A对象，A对象中的B属性为空，填充属性B
+
+* 从容器中查找B对象，找到了直接赋值，不存在循环依赖的问题（不通），找不到直接创建B对象
+
+* 实例化B对象，此时B对象中的A属性为空，填充属性A
+
+* 从容器中查找A对象，找不到直接创建，上述形成闭环原因
+
+* 此时仔细琢磨 A对象存在，此时A对象不是一个完整状态，只完成实例化未完成初始化 也就是半初始化状态如果在程序调用过程中
+
+  拥有了某个对象的引用，能否后期给他完成赋值操作，可以优先把非完整状态的对象优先赋值，等待后序操作来完成赋值，相当于提前暴露了某个不完整对象的引用，所以解决问题的核心就在于实例化和初始化分开操作，所有对象都完成实例化和初始化操作后，还要把完整对象放到容器中，此时在容器中存在对象的几个状态，完成实例化未完成初始化、完整状态，因为在容器中所以就要采取不同的容器存储，此时就有了一级缓存和二级缓存。如果一级缓存中有 二级缓存就不会存在同名对象，因为他们查找顺序是123，这样的方式来查找的 一级缓存中存放的完整对象 二级缓存中放的是非完整对象，半成品
+
+  为什么需要三级缓存 三级缓存的value类型是ObjectFactory，是一个函数式接口，存在的意义是保证在整个容器的运行过程中只能有一个同名bean的对象
+
+  如果一个对象被代理，是要生成一个普通对象的。
+
+  普通对象和代理对象是不能同时出现在容器中的，当一个对象需要被代理的时候，就需要代理对象覆盖掉之前的普通对象，实际的调用过程中，是没有办法确定什么时候对象被使用的，所以就要求某个对象被调用的时候，优先判断此对象是否需要被代理，类似回调机制的实现，因此传入lambda表达式，可以通过lambda表达式来执行对象的覆盖过程，getEarlyBeanReference（）
+
+  因此所有的bean的对象优先放到三级缓存中，如果需要被代理，则返回代理对象，不需要被代理返回普通对象
+
+  ![image-20220724192216410](image/Java汇总/image-20220724192216410.png)
+
+![image-20220724192811320](image/Java汇总/image-20220724192811320.png)
+
+#### 通过注解创建 Bean
+
+​		@Component 把当前类对象存入 Spring 容器中，相当于在 xml 中配置一个 bean 标签。value 属性指定 bean 的 id，不加的话，默认使用当前类的首字母小写的类名。
+
+~~~java
+@Component(value = "userService")
+public class UserService
+{
+    public void add(){
+    	System.out.println("add.....")
+     }
+}
+~~~
+
+​		@Controller ， @Service ， @Repository 三个注解都是 @Component 的衍生注解，作用及属性都是一模一样的。只是提供了更加明确语义， @Controller 用于表现层， @Service 用于业务层，@Repository 用于持久层。如果注解中有且只有一个 value 属性要赋值时可以省略 value。把类交给spring管理
+
+* @Controller 注解主要声明将控制器类配置给Spring管理，例如Servlet
+* @Service 注解主要声明业务处理类配置Spring管理，Service接口的实现类
+* @Repository直接主要声明持久化类配置给Spring管理，DAO接口
+* @Component除了控制器、service和DAO之外的类一律使用此注解声明
+
+​		如果想将第三方的类变成组件又没有源代码，也就没办法使用 @Component 进行自动配置，这种时候就要使用 @Bean 注解。被 @Bean 注解的方法返回值是一个对象，将会实例化，配置和初始化一个新对象并返回，这个对象由 Spring 的 IoC 容器管理。name 属性用于给当前 @Bean 注解方法创建的对象指定一个名称，即 bean 的 id。当使用注解配置方法时，如果方法有参数，Spring 会去容器查找是否有可用 bean对象，查找方式和 @Autowired 一样。
+
+#### 通过注解方式实现属性注入
+
+~~~~java
+//@Autowired   根据类型装配 UserDao
+//第一步 把service和dao对象创建，在service和dao类添加对象注解
+//第二步 在service注入dao对象，在service类添加dao类型属性，在属性上面使用注解。
+@Service
+public class UserService{
+    //定义dao类型属性。
+	//不需要添加set方法
+	//添加注入属性注解。
+	@Autowired
+    private UserDao userdao;
+    public void add(){
+    	System.out.println("service add.......");
+        userDao.add();
+    }
+}
+//@Qualifier 根据名称进行注入 搭配Autowired一起使用
+@Service
+public class UserService{
+    //定义dao类型属性。
+	//不需要添加set方法
+	//添加注入属性注解。
+	@Autowired
+    @Qualifier(value = "userdao1")//这里的目的就是UserDao接口有很多实现类，你可以指定注入具体的实现类，通过名称 以防你有多个子类继承userDao
+    private UserDao userdao;
+    public void add(){
+    	System.out.println("service add.......");
+        userDao.add();//多态父类的引用指向子类的对象，调用的方法是子类重写之后的方法
+    }
+}
+// 上面两个都是spring里的包 Resource是javax扩展包里的 不建议但是功能可以的
+@Service
+public class UserService{
+	@Resource //先byname找userdao  没找到就根据类型UserDao进行注入
+    private UserDao userdao;
+    public void add(){
+    	System.out.println("service add.......");
+        userDao.add();
+    }
+}
+@Service
+public class UserService{
+	@Resource(name = "userDaoImpl1") //根据类型进行注入
+    private UserDao userdao;
+    public void add(){
+    	System.out.println("service add.......");
+        userDao.add();
+    }
+}
+~~~~
+
+![image-20220718153000718](image/Java汇总/image-20220718153000718.png)
+
+#### AOP
+
+​		AOP 即面向切面编程，简单地说就是将代码中重复的部分抽取出来，在需要执行的时候使用动态代理技术，在不修改源码的基础上对方法进行增强，将切面织入到主业务中。
+​		Spring 根据类是否实现接口来判断动态代理方式，如果实现接口会使用 JDK 的动态代理，核心是InvocationHandler 接口和 Proxy 类，**用proxy里面的newProxyInstance创建接口实现类的代理对象**。如果没有实现接口会使用 CGLib 动态代理，CGLib 是在运行时动态生成某个类的子类，如果某个类被标记为 final，不能使用 CGLib 。
+​		JDK 动态代理主要通过重组字节码实现，首先获得被代理对象的引用和所有接口，生成新的类必须实现被代理类的所有接口，动态生成Java 代码后编译新生成的 .class 文件并重新加载到 JVM 运行。JDK代理直接写 Class 字节码，CGLib 是采用 ASM 框架写字节码，生成代理类的效率低。但是 CGLib 调用方法的效率高，因为 JDK 使用反射调用方法，CGLib 使用 FastClass 机制为代理类和被代理类各生成一个类，这个类会为代理类或被代理类的方法生成一个 index，这个 index 可以作为参数直接定位要调用的方法。
+​		常用场景包括权限认证、自动缓存、错误处理、日志、调试和事务等。
+
+**总结：AOP是面向切面编程，AOP关注的不再是程序代码中某个类，某些方法，考虑的是面到面，层与层之间的切入；AOP通常用来做一 些公共性的重复功能，比如安全控制、性能统计、日志记录；AOP作用是降低模块之间的耦合度，提高业务代码的聚合度，实现高内聚低耦合，提高代码的复用性，在不影响原有代码的情况下添加一些额外的功能；AOP的底层是动态代理实现的。**
+
+AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+
+~~~~java
+UserDao dao = (UserDao)Proxy.newProxyInstance(JDKProxy.class.getClassLoader(),interfaces,new UserDao(userDao));
+~~~~
+
+#### 连接点 切入点  通知（增强）
+
+* 连接点：类里面哪些方法可以被增强，这些方法称为连接点
+
+* 切入点：实际被真正增强的方法被称为切入点
+
+* 通知（增强）：实际增强逻辑部分就叫通知或者增强
+
+  ​                                                         JDK动态代理：创建接口实现类代理对象，增强类的方法
+
+<img src="image/Java汇总/image-20220629181741418.png" alt="image-20220629181741418" style="zoom: 80%;" />
+
+​                                                               CGLIB动态代理:创建子类的代理对象，增强类的方法
+
+<img src="image/Java汇总/image-20220629181854744.png" alt="image-20220629181854744" style="zoom:80%;" />
+
+#### 谈谈IOC和AOP的理解
+
+IOC控制反转 AOP面向切面编程
+
+Spring要自己控制和管理Bean，就需要从配置到实例化设置属性初始化这一套都要自己做，自己要操作bean，因此叫做控制反转
+AOP叫做切面编程统一做局部功能的加强，Spring想要通过ioc控制反转来创建bean，就需要自己从xml和注解中读取资源文件，把bean对象通过BeanDefineReader，把bean对象读取为BeanDefinition，然后进行实例化，属性填充
+AOP实现的是使用JDK动态代理和CGlib动态代理实现的功能增加，譬如日志的功能
+
+#### Bean的生命周期
+
+在 IoC 容器的初始化过程中会对 Bean 定义完成资源定位，加载读取配置并解析，最后将解析的 Bean信息放在一个 HashMap 集合中。当 IoC 容器初始化完成后，会进行对 Bean 实例的创建和依赖注入过程，注入对象依赖的各种属性值，在初始化时可以指定自定义的初始化方法。经过这一系列初始化操作后 Bean 达到可用状态，接下来就可以使用 Bean 了，当使用完成后会调用 destroy 方法进行销毁，此
+时也可以指定自定义的销毁方法，最终 Bean 被销毁且从容器中移除。
+XML 方式通过配置 bean 标签中的 init-Method 和 destory-Method 指定自定义初始化和销毁方法。
+注解方式通过配置 @Bean 注解中的 init-Method 和 destory-Method 指定自定义初始化和销毁方法。  
+
+#### BeanFactory、FactoryBean 和 ApplicationContext 的区别
+
+* BeanFactory 是一个 Bean 工厂，使用简单工厂模式，是 Spring IoC 容器顶级接口，可以理解为含有Bean 集合的工厂类，作用是管理 Bean，包括实例化、定位、配置对象及建立这些对象间的依赖。BeanFactory 实例化后并不会自动实例化 Bean，只有当 Bean 被使用时才实例化与装配依赖关系，属于延迟加载，适合多例模式。简而言之**创建一系列的类似对象**
+* FactoryBean 是一个工厂 Bean，使用了工厂方法模式，作用是生产其他 Bean 实例，可以通过实现该接口，提供一个工厂方法来自定义实例化 Bean 的逻辑。FactoryBean 接口由 BeanFactory 中配置的对象实现，这些对象本身就是用于创建对象的工厂，如果一个 Bean 实现了这个接口，那么它就是创建对象的工厂 Bean，而不是 Bean 实例本身。简而言之**生成一个有很复杂属性的对象**
+* ApplicationConext 是 BeanFactory 的子接口，扩展了 BeanFactory 的功能，提供了支持国际化的文本消息，统一的资源文件读取方式，事件传播以及应用层的特别配置等。容器会在初始化时对配置的Bean 进行预实例化，Bean 的依赖注入在容器初始化时就已经完成，属于立即加载，适合单例模式，一般推荐使用  
+
+#### Springboot 事务
+
+* Spring事务机制根据数据库事务和AOP机制的
+* 首先对使用@Transctional注解的Bean，Spring会创建一个代理对象作为Bean
+* 利用数据库管理器创建一个数据库连接
+* 修改数据库连接的auto commit为false，禁止连接的自动提交
+* 没出现异常就提交
+* 出现异常就回滚
+
+* 编程式事务管理 这意味着你可以通过编程的方式管理事务，这种方式带来了很大的灵活性，但很难维护。
+* 声明式事务管理，基于AOP原理的注解@Transcational 这种方式意味着你可以将事务管理和业务代码分离。你只需要通过注解或者XML配置管理事务
+
+#### Springboot Starter的工作原理
+
+总结一下，其实就是Spring Boot在启动的时候，按照约定去读取Spring Boot Starter的配置信息，再根据配置信息对资源进行初始化，并注入到Spring容器中。这样Spring Boot启动完毕后，就已经准备好了一切资源，使用过程中直接注入对应Bean资源即可
+
+#### Spring优势
+
+* 方便解耦，简化开发
+* AOP编程支持
+* 声明式事务的支持
+* 方便程序的测试
+* 方便集成优秀的框架
+
+
+
+## Mybatis
+
+### #{} 和 \${} 的区别是什么？
+
+答：
+
+- `${}`是 Properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如\${driver}会被静态替换为`com.mysql.jdbc. Driver`。
+- `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`。
+
+### xml 映射文件中，除了常见的 select、insert、update、delete 标签之外，还有哪些标签？
+
+答：还有很多其他的标签， `<resultMap>`、 `<parameterMap>`、 `<sql>`、 `<include>`、 `<selectKey>` ，加上动态 sql 的 9 个标签， `trim|where|set|foreach|if|choose|when|otherwise|bind` 等，其中 `<sql>` 为 sql 片段标签，通过 `<include>` 标签引入 sql 片段， `<selectKey>` 为不支持自增的主键生成策略标签。
+
+### Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？
+
+答：最佳实践中，通常一个 xml 映射文件，都会写一个 Dao 接口与之对应。Dao 接口就是人们常说的 `Mapper` 接口，接口的全限名，就是映射文件中的 namespace 的值，接口的方法名，就是映射文件中 `MappedStatement` 的 id 值，接口方法内的参数，就是传递给 sql 的参数。 `Mapper` 接口是没有实现类的，当调用接口方法时，接口全限名+方法名拼接字符串作为 key 值，可唯一定位一个 `MappedStatement` ，举例：`com.mybatis3.mappers. StudentDao.findStudentById` ，可以唯一找到 namespace 为 `com.mybatis3.mappers. StudentDao` 下面 `id = findStudentById` 的 `MappedStatement` 。在 MyBatis 中，每一个 `<select>`、 `<insert>`、 `<update>`、 `<delete>` 标签，都会被解析为一个 `MappedStatement` 对象。
+
+Dao 接口里的方法可以重载，但是 Mybatis 的 xml 里面的 ID 不允许重复。
+
+Mybatis 版本 3.3.0，亲测如下：
+
+```java
+/**
+ * Mapper接口里面方法重载
+ */
+public interface StuMapper {
+
+ List<Student> getAllStu();
+
+ List<Student> getAllStu(@Param("id") Integer id);
+}
+```
+
+然后在 `StuMapper.xml` 中利用 Mybatis 的动态 sql 就可以实现。
+
+```xml
+<select id="getAllStu" resultType="com.pojo.Student">
+  select * from student
+  <where>
+    <if test="id != null">
+      id = #{id}
+    </if>
+  </where>
+</select>
+```
+
+能正常运行，并能得到相应的结果，这样就实现了在 Dao 接口中写重载方法。
+
+**Mybatis 的 Dao 接口可以有多个重载方法，但是多个接口对应的映射必须只有一个，否则启动会报错。**
+
+相关 issue：更正：Dao 接口里的方法可以重载，但是 Mybatis 的 xml 里面的 ID 不允许重复！
+
+Dao 接口的工作原理是 JDK 动态代理，MyBatis 运行时会使用 JDK 动态代理为 Dao 接口生成代理 proxy 对象，代理对象 proxy 会拦截接口方法，转而执行 `MappedStatement` 所代表的 sql，然后将 sql 执行结果返回。
+
+**补充**：
+
+Dao 接口方法可以重载，但是需要满足以下条件：
+
+1. 仅有一个无参方法和一个有参方法
+2. 多个有参方法时，参数数量必须一致。且使用相同的 `@Param` ，或者使用 `param1` 这种
+
+**测试如下**：
+
+`PersonDao.java`
+
+```java
+Person queryById();
+
+Person queryById(@Param("id") Long id);
+
+Person queryById(@Param("id") Long id, @Param("name") String name);
+```
+
+`PersonMapper.xml`
+
+```xml
+<select id="queryById" resultMap="PersonMap">
+    select
+      id, name, age, address
+    from person
+    <where>
+        <if test="id != null">
+            id = #{id}
+        </if>
+        <if test="name != null and name != ''">
+            name = #{name}
+        </if>
+    </where>
+    limit 1
+</select>
+```
+
+`org.apache.ibatis.scripting.xmltags. DynamicContext. ContextAccessor#getProperty` 方法用于获取 `<if>` 标签中的条件值
+
+```java
+public Object getProperty(Map context, Object target, Object name) {
+  Map map = (Map) target;
+
+  Object result = map.get(name);
+  if (map.containsKey(name) || result != null) {
+    return result;
+  }
+
+  Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
+  if (parameterObject instanceof Map) {
+    return ((Map)parameterObject).get(name);
+  }
+
+  return null;
+}
+```
+
+`parameterObject` 为 map，存放的是 Dao 接口中参数相关信息。
+
+`((Map)parameterObject).get(name)` 方法如下
+
+```java
+public V get(Object key) {
+  if (!super.containsKey(key)) {
+    throw new BindingException("Parameter '" + key + "' not found. Available parameters are " + keySet());
+  }
+  return super.get(key);
+}
+```
+
+1. `queryById()`方法执行时，`parameterObject`为 null，`getProperty`方法返回 null 值，`<if>`标签获取的所有条件值都为 null，所有条件不成立，动态 sql 可以正常执行。
+2. `queryById(1L)`方法执行时，`parameterObject`为 map，包含了`id`和`param1`两个 key 值。当获取`<if>`标签中`name`的属性值时，进入`((Map)parameterObject).get(name)`方法中，map 中 key 不包含`name`，所以抛出异常。
+3. `queryById(1L,"1")`方法执行时，`parameterObject`中包含`id`,`param1`,`name`,`param2`四个 key 值，`id`和`name`属性都可以获取到，动态 sql 正常执行。
+
+### MyBatis 是如何进行分页的？分页插件的原理是什么？
+
+答：**(1)** MyBatis 使用 RowBounds 对象进行分页，它是针对 ResultSet 结果集执行的内存分页，而非物理分页；
+
+**(2)** 可以在 sql 内直接书写带有物理分页的参数来完成物理分页功能，**(3)** 也可以使用分页插件来完成物理分页。
+
+分页插件的基本原理是使用 MyBatis 提供的插件接口，实现自定义插件，在插件的拦截方法内拦截待执行的 sql，然后重写 sql，根据 dialect 方言，添加对应的物理分页语句和物理分页参数。
+
+举例：`select _ from student` ，拦截 sql 后重写为：`select t._ from （select \* from student）t limit 0，10`
+
+### 简述 MyBatis 的插件运行原理，以及如何编写一个插件
+
+答：MyBatis 仅可以编写针对 `ParameterHandler`、 `ResultSetHandler`、 `StatementHandler`、 `Executor` 这 4 种接口的插件，MyBatis 使用 JDK 的动态代理，为需要拦截的接口生成代理对象以实现接口方法拦截功能，每当执行这 4 种接口对象的方法时，就会进入拦截方法，具体就是 `InvocationHandler` 的 `invoke()` 方法，当然，只会拦截那些你指定需要拦截的方法。
+
+实现 MyBatis 的 `Interceptor` 接口并复写 `intercept()` 方法，然后在给插件编写注解，指定要拦截哪一个接口的哪些方法即可，记住，别忘了在配置文件中配置你编写的插件。
+
+### MyBatis 执行批量插入，能返回数据库主键列表吗？
+
+答：能，JDBC 都能，MyBatis 当然也能。
+
+### MyBatis 动态 sql 是做什么的？都有哪些动态 sql？能简述一下动态 sql 的执行原理不？
+
+答：MyBatis 动态 sql 可以让我们在 xml 映射文件内，以标签的形式编写动态 sql，完成逻辑判断和动态拼接 sql 的功能。其执行原理为，使用 OGNL 从 sql 参数对象中计算表达式的值，根据表达式的值动态拼接 sql，以此来完成动态 sql 的功能。
+
+MyBatis 提供了 9 种动态 sql 标签:
+
+- `<if></if>`
+- `<where></where>(trim,set)`
+- `<choose></choose>（when, otherwise）`
+- `<foreach></foreach>`
+- `<bind/>`
+
+### MyBatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？
+
+答：第一种是使用 `<resultMap>` 标签，逐一定义列名和对象属性名之间的映射关系。第二种是使用 sql 列的别名功能，将列别名书写为对象属性名，比如 T_NAME AS NAME，对象属性名一般是 name，小写，但是列名不区分大小写，MyBatis 会忽略列名大小写，智能找到与之对应对象属性名，你甚至可以写成 T_NAME AS NaMe，MyBatis 一样可以正常工作。
+
+有了列名与属性名的映射关系后，MyBatis 通过反射创建对象，同时使用反射给对象的属性逐一赋值并返回，那些找不到映射关系的属性，是无法完成赋值的。
+
+### MyBatis 能执行一对一、一对多的关联查询吗？都有哪些实现方式，以及它们之间的区别
+
+答：能，MyBatis 不仅可以执行一对一、一对多的关联查询，还可以执行多对一，多对多的关联查询，多对一查询，其实就是一对一查询，只需要把 `selectOne()` 修改为 `selectList()` 即可；多对多查询，其实就是一对多查询，只需要把 `selectOne()` 修改为 `selectList()` 即可。
+
+关联对象查询，有两种实现方式，一种是单独发送一个 sql 去查询关联对象，赋给主对象，然后返回主对象。另一种是使用嵌套查询，嵌套查询的含义为使用 join 查询，一部分列是 A 对象的属性值，另外一部分列是关联对象 B 的属性值，好处是只发一个 sql 查询，就可以把主对象和其关联对象查出来。
+
+那么问题来了，join 查询出来 100 条记录，如何确定主对象是 5 个，而不是 100 个？其去重复的原理是 `<resultMap>` 标签内的 `<id>` 子标签，指定了唯一确定一条记录的 id 列，MyBatis 根据 `<id>` 列值来完成 100 条记录的去重复功能， `<id>` 可以有多个，代表了联合主键的语意。
+
+同样主对象的关联对象，也是根据这个原理去重复的，尽管一般情况下，只有主对象会有重复记录，关联对象一般不会重复。
+
+举例：下面 join 查询出来 6 条记录，一、二列是 Teacher 对象列，第三列为 Student 对象列，MyBatis 去重复处理后，结果为 1 个老师 6 个学生，而不是 6 个老师 6 个学生。
+
+| t_id | t_name  | s_id |
+| ---- | ------- | ---- |
+| 1    | teacher | 38   |
+| 1    | teacher | 39   |
+| 1    | teacher | 40   |
+| 1    | teacher | 41   |
+| 1    | teacher | 42   |
+| 1    | teacher | 43   |
+
+### MyBatis 是否支持延迟加载？如果支持，它的实现原理是什么？
+
+答：MyBatis 仅支持 association 关联对象和 collection 关联集合对象的延迟加载，association 指的就是一对一，collection 指的就是一对多查询。在 MyBatis 配置文件中，可以配置是否启用延迟加载 `lazyLoadingEnabled=true|false。`
+
+它的原理是，使用 `CGLIB` 创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用 `a.getB().getName()` ，拦截器 `invoke()` 方法发现 `a.getB()` 是 null 值，那么就会单独发送事先保存好的查询关联 B 对象的 sql，把 B 查询上来，然后调用 a.setB(b)，于是 a 的对象 b 属性就有值了，接着完成 `a.getB().getName()` 方法的调用。这就是延迟加载的基本原理。
+
+当然了，不光是 MyBatis，几乎所有的包括 Hibernate，支持延迟加载的原理都是一样的。
+
+### MyBatis 的 xml 映射文件中，不同的 xml 映射文件，id 是否可以重复？
+
+答：不同的 xml 映射文件，如果配置了 namespace，那么 id 可以重复；如果没有配置 namespace，那么 id 不能重复；毕竟 namespace 不是必须的，只是最佳实践而已。
+
+原因就是 namespace+id 是作为 `Map<String, MappedStatement>` 的 key 使用的，如果没有 namespace，就剩下 id，那么，id 重复会导致数据互相覆盖。有了 namespace，自然 id 就可以重复，namespace 不同，namespace+id 自然也就不同。
+
+### MyBatis 中如何执行批处理？
+
+答：使用 `BatchExecutor` 完成批处理。
+
+### MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？
+
+答：MyBatis 有三种基本的 `Executor` 执行器：
+
+- **`SimpleExecutor`：** 每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。
+- **`ReuseExecutor`：** 执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map<String, Statement>内，供下一次使用。简言之，就是重复使用 Statement 对象。
+- **`BatchExecutor`**：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。
+
+作用范围：`Executor` 的这些特点，都严格限制在 SqlSession 生命周期范围内。
+
+### MyBatis 中如何指定使用哪一种 Executor 执行器？
+
+答：在 MyBatis 配置文件中，可以指定默认的 `ExecutorType` 执行器类型，也可以手动给 `DefaultSqlSessionFactory` 的创建 SqlSession 的方法传递 `ExecutorType` 类型参数。
+
+### MyBatis 是否可以映射 Enum 枚举类？
+
+答：MyBatis 可以映射枚举类，不单可以映射枚举类，MyBatis 可以映射任何对象到表的一列上。映射方式为自定义一个 `TypeHandler` ，实现 `TypeHandler` 的 `setParameter()` 和 `getResult()` 接口方法。 `TypeHandler` 有两个作用：
+
+- 一是完成从 javaType 至 jdbcType 的转换；
+- 二是完成 jdbcType 至 javaType 的转换，体现为 `setParameter()` 和 `getResult()` 两个方法，分别代表设置 sql 问号占位符参数和获取列查询结果。
+
+### MyBatis 映射文件中，如果 A 标签通过 include 引用了 B 标签的内容，请问，B 标签能否定义在 A 标签的后面，还是说必须定义在 A 标签的前面？
+
+答：虽然 MyBatis 解析 xml 映射文件是按照顺序解析的，但是，被引用的 B 标签依然可以定义在任何地方，MyBatis 都可以正确识别。
+
+原理是，MyBatis 解析 A 标签，发现 A 标签引用了 B 标签，但是 B 标签尚未解析到，尚不存在，此时，MyBatis 会将 A 标签标记为未解析状态，然后继续解析余下的标签，包含 B 标签，待所有标签解析完毕，MyBatis 会重新解析那些被标记为未解析的标签，此时再解析 A 标签时，B 标签已经存在，A 标签也就可以正常解析完成了。
+
+### 简述 MyBatis 的 xml 映射文件和 MyBatis 内部数据结构之间的映射关系？
+
+答：MyBatis 将所有 xml 配置信息都封装到 All-In-One 重量级对象 Configuration 内部。在 xml 映射文件中， `<parameterMap>` 标签会被解析为 `ParameterMap` 对象，其每个子元素会被解析为 ParameterMapping 对象。 `<resultMap>` 标签会被解析为 `ResultMap` 对象，其每个子元素会被解析为 `ResultMapping` 对象。每一个 `<select>、<insert>、<update>、<delete>` 标签均会被解析为 `MappedStatement` 对象，标签内的 sql 会被解析为 BoundSql 对象。
+
+### 为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？
+
+答：Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集合对象时，可以根据对象关系模型直接获取，所以它是全自动的。而 MyBatis 在查询关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映射工具。
+
+面试题看似都很简单，但是想要能正确回答上来，必定是研究过源码且深入的人，而不是仅会使用的人或者用的很熟的人，以上所有面试题及其答案所涉及的内容，在我的 MyBatis 系列博客中都有详细讲解和原理分析。
+
+
+
+## Spring&SpringBoot常用注解总结
+
+### 1. `@SpringBootApplication`
+
+这里先单独拎出`@SpringBootApplication` 注解说一下，虽然我们一般不会主动去使用它。
+
+_Guide：这个注解是 Spring Boot 项目的基石，创建 SpringBoot 项目之后会默认在主类加上。_
+
+```java
+@SpringBootApplication
+public class SpringSecurityJwtGuideApplication {
+      public static void main(java.lang.String[] args) {
+        SpringApplication.run(SpringSecurityJwtGuideApplication.class, args);
+    }
+}
+```
+
+我们可以把 `@SpringBootApplication`看作是 `@Configuration`、`@EnableAutoConfiguration`、`@ComponentScan` 注解的集合。
+
+```java
+package org.springframework.boot.autoconfigure;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(excludeFilters = {
+		@Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
+		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+public @interface SpringBootApplication {
+   ......
+}
+
+package org.springframework.boot;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface SpringBootConfiguration {
+
+}
+```
+
+根据 SpringBoot 官网，这三个注解的作用分别是：
+
+- `@EnableAutoConfiguration`：启用 SpringBoot 的自动配置机制
+- `@ComponentScan`：扫描被`@Component` (`@Repository`,`@Service`,`@Controller`)注解的 bean，注解默认会扫描该类所在的包下所有的类。
+- `@Configuration`：允许在 Spring 上下文中注册额外的 bean 或导入其他配置类
+
+### 2. Spring Bean 相关
+
+#### 2.1. `@Autowired`
+
+自动导入对象到类中，被注入进的类同样要被 Spring 容器管理比如：Service 类注入到 Controller 类中。
+
+```java
+@Service
+public class UserService {
+  ......
+}
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+   @Autowired
+   private UserService userService;
+   ......
+}
+```
+
+#### 2.2. `@Component`,`@Repository`,`@Service`, `@Controller`
+
+我们一般使用 `@Autowired` 注解让 Spring 容器帮我们自动装配 bean。要想把类标识成可用于 `@Autowired` 注解自动装配的 bean 的类,可以采用以下注解实现：
+
+- `@Component`：通用的注解，可标注任意类为 `Spring` 组件。如果一个 Bean 不知道属于哪个层，可以使用`@Component` 注解标注。
+- `@Repository` : 对应持久层即 Dao 层，主要用于数据库相关操作。
+- `@Service` : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。
+- `@Controller` : 对应 Spring MVC 控制层，主要用于接受用户请求并调用 Service 层返回数据给前端页面。
+
+#### 2.3. `@RestController`
+
+`@RestController`注解是`@Controller`和`@ResponseBody`的合集,表示这是个控制器 bean,并且是将函数的返回值直接填入 HTTP 响应体中,是 REST 风格的控制器。
+
+_Guide：现在都是前后端分离，说实话我已经很久没有用过`@Controller`。如果你的项目太老了的话，就当我没说。_
+
+单独使用 `@Controller` 不加 `@ResponseBody`的话一般是用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。`@Controller` +`@ResponseBody` 返回 JSON 或 XML 形式数据
+
+关于`@RestController` 和 `@Controller`的对比
+
+- @RestController加在类上面的注解，使得类里面的每个方法都将json/xml返回数据加返回到前台页面中
+
+- @Controller加在类上面的注解，使得类里面的每个方法都返回一个试图页面
+
+- @Controller和@ResponseBody（加在方法/类上面）一起使用，和@RestController的作用相同
+
+- 为了兼容以前方式，RestController其实就是Controller，只是在Controller返回对象前，它干了件事情，通过注解标识@ResponseBody把返回的对象Object，转换成了JSON字符串。
+
+  这里注意@Controller返回也是java对象，但它本质是SpringMVC框架的ModelAndView对象；
+  而@RestController返回则是业务对象，或者统一的返回值对象 SysResult。
+
+#### 2.4. `@Scope`
+
+声明 Spring Bean 的作用域，使用方法:
+
+```java
+@Bean
+@Scope("singleton")
+public Person personSingleton() {
+    return new Person();
+}
+```
+
+**四种常见的 Spring Bean 的作用域：**
+
+- singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。
+- prototype : 每次请求都会创建一个新的 bean 实例。
+- request : 每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP request 内有效。
+- session : 每一个 HTTP Session 会产生一个新的 bean，该 bean 仅在当前 HTTP session 内有效。
+
+#### 2.5. `@Configuration`
+
+一般用来声明配置类，可以使用 `@Component`注解替代，不过使用`@Configuration`注解声明配置类更加语义化。
+
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    public TransferService transferService() {
+        return new TransferServiceImpl();
+    }
+
+}
+```
+
+### 3. 处理常见的 HTTP 请求类型
+
+**5 种常见的请求类型:**
+
+- **GET**：请求从服务器获取特定资源。举个例子：`GET /users`（获取所有学生）
+- **POST**：在服务器上创建一个新的资源。举个例子：`POST /users`（创建学生）
+- **PUT**：更新服务器上的资源（客户端提供更新后的整个资源）。举个例子：`PUT /users/12`（更新编号为 12 的学生）
+- **DELETE**：从服务器删除特定的资源。举个例子：`DELETE /users/12`（删除编号为 12 的学生）
+- **PATCH**：更新服务器上的资源（客户端提供更改的属性，可以看做作是部分更新），使用的比较少，这里就不举例子了。
+
+#### 3.1. GET 请求
+
+`@GetMapping("users")` 等价于`@RequestMapping(value="/users",method=RequestMethod.GET)`
+
+```java
+@GetMapping("/users")
+public ResponseEntity<List<User>> getAllUsers() {
+ return userRepository.findAll();
+}
+```
+
+#### 3.2. POST 请求
+
+`@PostMapping("users")` 等价于`@RequestMapping(value="/users",method=RequestMethod.POST)`
+
+关于`@RequestBody`注解的使用，在下面的“前后端传值”这块会讲到。
+
+```java
+@PostMapping("/users")
+public ResponseEntity<User> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
+ return userRespository.save(userCreateRequest);
+}
+```
+
+#### 3.3. PUT 请求
+
+`@PutMapping("/users/{userId}")` 等价于`@RequestMapping(value="/users/{userId}",method=RequestMethod.PUT)`
+
+```java
+@PutMapping("/users/{userId}")
+public ResponseEntity<User> updateUser(@PathVariable(value = "userId") Long userId,
+  @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+  ......
+}
+```
+
+#### 3.4. **DELETE 请求**
+
+`@DeleteMapping("/users/{userId}")`等价于`@RequestMapping(value="/users/{userId}",method=RequestMethod.DELETE)`
+
+```java
+@DeleteMapping("/users/{userId}")
+public ResponseEntity deleteUser(@PathVariable(value = "userId") Long userId){
+  ......
+}
+```
+
+#### 3.5. **PATCH 请求**
+
+一般实际项目中，我们都是 PUT 不够用了之后才用 PATCH 请求去更新数据。
+
+```java
+  @PatchMapping("/profile")
+  public ResponseEntity updateStudent(@RequestBody StudentUpdateRequest studentUpdateRequest) {
+        studentRepository.updateDetail(studentUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+```
+
+### 4. 前后端传值
+
+**掌握前后端传值的正确姿势，是你开始 CRUD 的第一步！**
+
+#### 4.1. `@PathVariable` 和 `@RequestParam`
+
+`@PathVariable`用于获取路径参数，`@RequestParam`用于获取查询参数。
+
+举个简单的例子：
+
+```java
+@GetMapping("/klasses/{klassId}/teachers")
+public List<Teacher> getKlassRelatedTeachers(
+         @PathVariable("klassId") Long klassId,
+         @RequestParam(value = "type", required = false) String type ) {
+...
+}
+```
+
+如果我们请求的 url 是：`/klasses/123456/teachers?type=web`
+
+那么我们服务获取到的数据就是：`klassId=123456,type=web`。
+
+#### 4.2. `@RequestBody`
+
+用于读取 Request 请求（可能是 POST,PUT,DELETE,GET 请求）的 body 部分并且**Content-Type 为 application/json** 格式的数据，接收到数据之后会自动将数据绑定到 Java 对象上去。系统会使用`HttpMessageConverter`或者自定义的`HttpMessageConverter`将请求的 body 中的 json 字符串转换为 java 对象。
+
+我用一个简单的例子来给演示一下基本使用！
+
+我们有一个注册的接口：
+
+```java
+@PostMapping("/sign-up")
+public ResponseEntity signUp(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+  userService.save(userRegisterRequest);
+  return ResponseEntity.ok().build();
+}
+```
+
+`UserRegisterRequest`对象：
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserRegisterRequest {
+    @NotBlank
+    private String userName;
+    @NotBlank
+    private String password;
+    @NotBlank
+    private String fullName;
+}
+```
+
+我们发送 post 请求到这个接口，并且 body 携带 JSON 数据：
+
+```json
+{ "userName": "coder", "fullName": "shuangkou", "password": "123456" }
+```
+
+这样我们的后端就可以直接把 json 格式的数据映射到我们的 `UserRegisterRequest` 类上。
+
+👉 需要注意的是：**一个请求方法只可以有一个`@RequestBody`，但是可以有多个`@RequestParam`和`@PathVariable`**。 如果你的方法必须要用两个 `@RequestBody`来接受数据的话，大概率是你的数据库设计或者系统设计出问题了！
+
+### 5. 读取配置信息
+
+**很多时候我们需要将一些常用的配置信息比如阿里云 oss、发送短信、微信认证的相关配置信息等等放到配置文件中。**
+
+**下面我们来看一下 Spring 为我们提供了哪些方式帮助我们从配置文件中读取这些配置信息。**
+
+我们的数据源`application.yml`内容如下：
+
+```yaml
+wuhan2020: 2020年初武汉爆发了新型冠状病毒，疫情严重，但是，我相信一切都会过去！武汉加油！中国加油！
+
+my-profile:
+  name: Guide哥
+  email: koushuangbwcx@163.com
+
+library:
+  location: 湖北武汉加油中国加油
+  books:
+    - name: 天才基本法
+      description: 二十二岁的林朝夕在父亲确诊阿尔茨海默病这天，得知自己暗恋多年的校园男神裴之即将出国深造的消息——对方考取的学校，恰是父亲当年为她放弃的那所。
+    - name: 时间的秩序
+      description: 为什么我们记得过去，而非未来？时间“流逝”意味着什么？是我们存在于时间之内，还是时间存在于我们之中？卡洛·罗韦利用诗意的文字，邀请我们思考这一亘古难题——时间的本质。
+    - name: 了不起的我
+      description: 如何养成一个新习惯？如何让心智变得更成熟？如何拥有高质量的关系？ 如何走出人生的艰难时刻？
+```
+
+#### 5.1. `@Value`(常用)
+
+使用 `@Value("${property}")` 读取比较简单的配置信息：
+
+```java
+@Value("${wuhan2020}")
+String wuhan2020;
+```
+
+#### 5.2. `@ConfigurationProperties`(常用)
+
+通过`@ConfigurationProperties`读取配置信息并与 bean 绑定。
+
+```java
+@Component
+@ConfigurationProperties(prefix = "library")
+class LibraryProperties {
+    @NotEmpty
+    private String location;
+    private List<Book> books;
+
+    @Setter
+    @Getter
+    @ToString
+    static class Book {
+        String name;
+        String description;
+    }
+  省略getter/setter
+  ......
+}
+```
+
+你可以像使用普通的 Spring bean 一样，将其注入到类中使用。
+
+#### 5.3. `@PropertySource`（不常用）
+
+`@PropertySource`读取指定 properties 文件
+
+```java
+@Component
+@PropertySource("classpath:website.properties")
+
+class WebSite {
+    @Value("${url}")
+    private String url;
+
+  省略getter/setter
+  ......
+}
+```
+
+
+
+### 6. 参数校验
+
+**数据的校验的重要性就不用说了，即使在前端对数据进行校验的情况下，我们还是要对传入后端的数据再进行一遍校验，避免用户绕过浏览器直接通过一些 HTTP 工具直接向后端请求一些违法数据。**
+
+**JSR(Java Specification Requests）** 是一套 JavaBean 参数校验的标准，它定义了很多常用的校验注解，我们可以直接将这些注解加在我们 JavaBean 的属性上面，这样就可以在需要校验的时候进行校验了，非常方便！
+
+校验的时候我们实际用的是 **Hibernate Validator** 框架。Hibernate Validator 是 Hibernate 团队最初的数据校验框架，Hibernate Validator 4.x 是 Bean Validation 1.0（JSR 303）的参考实现，Hibernate Validator 5.x 是 Bean Validation 1.1（JSR 349）的参考实现，目前最新版的 Hibernate Validator 6.x 是 Bean Validation 2.0（JSR 380）的参考实现。
+
+SpringBoot 项目的 spring-boot-starter-web 依赖中已经有 hibernate-validator 包，不需要引用相关依赖。如下图所示（通过 idea 插件—Maven Helper 生成）：
+
+**注**：更新版本的 spring-boot-starter-web 依赖中不再有 hibernate-validator 包（如 2.3.11.RELEASE），需要自己引入 `spring-boot-starter-validation` 依赖。
+
+![](https://oss.javaguide.cn/2021/03/c7bacd12-1c1a-4e41-aaaf-4cad840fc073.png)
+
+👉 需要注意的是：**所有的注解，推荐使用 JSR 注解，即`javax.validation.constraints`，而不是`org.hibernate.validator.constraints`**
+
+#### 6.1. 一些常用的字段验证的注解
+
+- `@NotEmpty` 被注释的字符串的不能为 null 也不能为空
+- `@NotBlank` 被注释的字符串非 null，并且必须包含一个非空白字符
+- `@Null` 被注释的元素必须为 null
+- `@NotNull` 被注释的元素必须不为 null
+- `@AssertTrue` 被注释的元素必须为 true
+- `@AssertFalse` 被注释的元素必须为 false
+- `@Pattern(regex=,flag=)`被注释的元素必须符合指定的正则表达式
+- `@Email` 被注释的元素必须是 Email 格式。
+- `@Min(value)`被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+- `@Max(value)`被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+- `@DecimalMin(value)`被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+- `@DecimalMax(value)` 被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+- `@Size(max=, min=)`被注释的元素的大小必须在指定的范围内
+- `@Digits(integer, fraction)`被注释的元素必须是一个数字，其值必须在可接受的范围内
+- `@Past`被注释的元素必须是一个过去的日期
+- `@Future` 被注释的元素必须是一个将来的日期
+- ......
+
+#### 6.2. 验证请求体(RequestBody)
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Person {
+
+    @NotNull(message = "classId 不能为空")
+    private String classId;
+
+    @Size(max = 33)
+    @NotNull(message = "name 不能为空")
+    private String name;
+
+    @Pattern(regexp = "((^Man$|^Woman$|^UGM$))", message = "sex 值不在可选范围")
+    @NotNull(message = "sex 不能为空")
+    private String sex;
+
+    @Email(message = "email 格式不正确")
+    @NotNull(message = "email 不能为空")
+    private String email;
+
+}
+```
+
+我们在需要验证的参数上加上了`@Valid`注解，如果验证失败，它将抛出`MethodArgumentNotValidException`。
+
+```java
+@RestController
+@RequestMapping("/api")
+public class PersonController {
+
+    @PostMapping("/person")
+    public ResponseEntity<Person> getPerson(@RequestBody @Valid Person person) {
+        return ResponseEntity.ok().body(person);
+    }
+}
+```
+
+#### 6.3. 验证请求参数(Path Variables 和 Request Parameters)
+
+**一定一定不要忘记在类上加上 `@Validated` 注解了，这个参数可以告诉 Spring 去校验方法参数。**
+
+```java
+@RestController
+@RequestMapping("/api")
+@Validated
+public class PersonController {
+
+    @GetMapping("/person/{id}")
+    public ResponseEntity<Integer> getPersonByID(@Valid @PathVariable("id") @Max(value = 5,message = "超过 id 的范围了") Integer id) {
+        return ResponseEntity.ok().body(id);
+    }
+}
+```
+
+
+
+介绍一下我们 Spring 项目必备的全局处理 Controller 层异常。
+
+**相关注解：**
+
+1. `@ControllerAdvice` :注解定义全局异常处理类
+2. `@ExceptionHandler` :注解声明异常处理方法
+
+如何使用呢？拿参数校验这块来举例子。如果方法参数不对的话就会抛出`MethodArgumentNotValidException`，我们来处理这个异常。
+
+```java
+@ControllerAdvice
+@ResponseBody
+public class GlobalExceptionHandler {
+
+    /**
+     * 请求参数异常处理
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+       ......
+    }
+}
+```
+
+
+
+#### 8.1. 创建表
+
+`@Entity`声明一个类对应一个数据库实体。
+
+`@Table` 设置表名
+
+```java
+@Entity
+@Table(name = "role")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String description;
+    省略getter/setter......
+}
+```
+
+#### 8.2. 创建主键
+
+`@Id`：声明一个字段为主键。
+
+使用`@Id`声明之后，我们还需要定义主键的生成策略。我们可以使用 `@GeneratedValue` 指定主键生成策略。
+
+**1.通过 `@GeneratedValue`直接使用 JPA 内置提供的四种主键生成策略来指定主键生成策略。**
+
+```java
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+```
+
+JPA 使用枚举定义了 4 种常见的主键生成策略，如下：
+
+_Guide：枚举替代常量的一种用法_
+
+```java
+public enum GenerationType {
+
+    /**
+     * 使用一个特定的数据库表格来保存主键
+     * 持久化引擎通过关系数据库的一张特定的表格来生成主键,
+     */
+    TABLE,
+
+    /**
+     *在某些数据库中,不支持主键自增长,比如Oracle、PostgreSQL其提供了一种叫做"序列(sequence)"的机制生成主键
+     */
+    SEQUENCE,
+
+    /**
+     * 主键自增长
+     */
+    IDENTITY,
+
+    /**
+     *把主键生成策略交给持久化引擎(persistence engine),
+     *持久化引擎会根据数据库在以上三种主键生成 策略中选择其中一种
+     */
+    AUTO
+}
+
+```
+
+`@GeneratedValue`注解默认使用的策略是`GenerationType.AUTO`
+
+```java
+public @interface GeneratedValue {
+
+    GenerationType strategy() default AUTO;
+    String generator() default "";
+}
+```
+
+一般使用 MySQL 数据库的话，使用`GenerationType.IDENTITY`策略比较普遍一点（分布式系统的话需要另外考虑使用分布式 ID）。
+
+**2.通过 `@GenericGenerator`声明一个主键策略，然后 `@GeneratedValue`使用这个策略**
+
+```java
+@Id
+@GeneratedValue(generator = "IdentityIdGenerator")
+@GenericGenerator(name = "IdentityIdGenerator", strategy = "identity")
+private Long id;
+```
+
+等价于：
+
+```java
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+```
+
+jpa 提供的主键生成策略有如下几种：
+
+```java
+public class DefaultIdentifierGeneratorFactory
+		implements MutableIdentifierGeneratorFactory, Serializable, ServiceRegistryAwareService {
+
+	@SuppressWarnings("deprecation")
+	public DefaultIdentifierGeneratorFactory() {
+		register( "uuid2", UUIDGenerator.class );
+		register( "guid", GUIDGenerator.class );			// can be done with UUIDGenerator + strategy
+		register( "uuid", UUIDHexGenerator.class );			// "deprecated" for new use
+		register( "uuid.hex", UUIDHexGenerator.class ); 	// uuid.hex is deprecated
+		register( "assigned", Assigned.class );
+		register( "identity", IdentityGenerator.class );
+		register( "select", SelectGenerator.class );
+		register( "sequence", SequenceStyleGenerator.class );
+		register( "seqhilo", SequenceHiLoGenerator.class );
+		register( "increment", IncrementGenerator.class );
+		register( "foreign", ForeignGenerator.class );
+		register( "sequence-identity", SequenceIdentityGenerator.class );
+		register( "enhanced-sequence", SequenceStyleGenerator.class );
+		register( "enhanced-table", TableGenerator.class );
+	}
+
+	public void register(String strategy, Class generatorClass) {
+		LOG.debugf( "Registering IdentifierGenerator strategy [%s] -> [%s]", strategy, generatorClass.getName() );
+		final Class previous = generatorStrategyToClassNameMap.put( strategy, generatorClass );
+		if ( previous != null ) {
+			LOG.debugf( "    - overriding [%s]", previous.getName() );
+		}
+	}
+
+}
+```
+
+#### 8.3. 设置字段类型
+
+`@Column` 声明字段。
+
+**示例：**
+
+设置属性 userName 对应的数据库字段名为 user_name，长度为 32，非空
+
+```java
+@Column(name = "user_name", nullable = false, length=32)
+private String userName;
+```
+
+设置字段类型并且加默认值，这个还是挺常用的。
+
+```java
+@Column(columnDefinition = "tinyint(1) default 1")
+private Boolean enabled;
+```
+
+#### 8.4. 指定不持久化特定字段
+
+`@Transient`：声明不需要与数据库映射的字段，在保存的时候不需要保存进数据库 。
+
+如果我们想让`secrect` 这个字段不被持久化，可以使用 `@Transient`关键字声明。
+
+```java
+@Entity(name="USER")
+public class User {
+
+    ......
+    @Transient
+    private String secrect; // not persistent because of @Transient
+
+}
+```
+
+除了 `@Transient`关键字声明， 还可以采用下面几种方法：
+
+```java
+static String secrect; // not persistent because of static
+final String secrect = "Satish"; // not persistent because of final
+transient String secrect; // not persistent because of transient
+```
+
+一般使用注解的方式比较多。
+
+#### 8.5. 声明大字段
+
+`@Lob`:声明某个字段为大字段。
+
+```java
+@Lob
+private String content;
+```
+
+更详细的声明：
+
+```java
+@Lob
+//指定 Lob 类型数据的获取策略， FetchType.EAGER 表示非延迟加载，而 FetchType.LAZY 表示延迟加载 ；
+@Basic(fetch = FetchType.EAGER)
+//columnDefinition 属性指定数据表对应的 Lob 字段类型
+@Column(name = "content", columnDefinition = "LONGTEXT NOT NULL")
+private String content;
+```
+
+#### 8.6. 创建枚举类型的字段
+
+可以使用枚举类型的字段，不过枚举字段要用`@Enumerated`注解修饰。
+
+```java
+public enum Gender {
+    MALE("男性"),
+    FEMALE("女性");
+
+    private String value;
+    Gender(String str){
+        value=str;
+    }
+}
+```
+
+```java
+@Entity
+@Table(name = "role")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String description;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    省略getter/setter......
+}
+```
+
+数据库里面对应存储的是 MALE/FEMALE。
+
+#### 8.7. 增加审计功能
+
+只要继承了 `AbstractAuditBase`的类都会默认加上下面四个字段。
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@MappedSuperclass
+@EntityListeners(value = AuditingEntityListener.class)
+public abstract class AbstractAuditBase {
+
+    @CreatedDate
+    @Column(updatable = false)
+    @JsonIgnore
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Instant updatedAt;
+
+    @CreatedBy
+    @Column(updatable = false)
+    @JsonIgnore
+    private String createdBy;
+
+    @LastModifiedBy
+    @JsonIgnore
+    private String updatedBy;
+}
+
+```
+
+我们对应的审计功能对应地配置类可能是下面这样的（Spring Security 项目）:
+
+```java
+@Configuration
+@EnableJpaAuditing
+public class AuditSecurityConfiguration {
+    @Bean
+    AuditorAware<String> auditorAware() {
+        return () -> Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .filter(Authentication::isAuthenticated)
+                .map(Authentication::getName);
+    }
+}
+```
+
+简单介绍一下上面涉及到的一些注解：
+
+1. `@CreatedDate`: 表示该字段为创建时间字段，在这个实体被 insert 的时候，会设置值
+
+2. `@CreatedBy` :表示该字段为创建人，在这个实体被 insert 的时候，会设置值
+
+   `@LastModifiedDate`、`@LastModifiedBy`同理。
+
+`@EnableJpaAuditing`：开启 JPA 审计功能。
+
+#### 8.8. 删除/修改数据
+
+`@Modifying` 注解提示 JPA 该操作是修改操作,注意还要配合`@Transactional`注解使用。
+
+```java
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+    @Modifying
+    @Transactional(rollbackFor = Exception.class)
+    void deleteByUserName(String userName);
+}
+```
+
+#### 8.9. 关联关系
+
+- `@OneToOne` 声明一对一关系
+- `@OneToMany` 声明一对多关系
+- `@ManyToOne` 声明多对一关系
+- `@ManyToMany` 声明多对多关系
+
+### 9. 事务 `@Transactional`
+
+在要开启事务的方法上使用`@Transactional`注解即可!
+
+```java
+@Transactional(rollbackFor = Exception.class)
+public void save() {
+  ......
+}
+
+```
+
+我们知道 Exception 分为运行时异常 RuntimeException 和非运行时异常。在`@Transactional`注解中如果不配置`rollbackFor`属性,那么事务只会在遇到`RuntimeException`的时候才会回滚,加上`rollbackFor=Exception.class`,可以让事务在遇到非运行时异常时也回滚。
+
+`@Transactional` 注解一般可以作用在`类`或者`方法`上。
+
+- **作用于类**：当把`@Transactional` 注解放在类上时，表示所有该类的 public 方法都配置相同的事务属性信息。
+- **作用于方法**：当类配置了`@Transactional`，方法也配置了`@Transactional`，方法的事务会覆盖类的事务配置信息。
+
+### 10. json 数据处理
+
+#### 10.1. 过滤 json 数据
+
+**`@JsonIgnoreProperties` 作用在类上用于过滤掉特定字段不返回或者不解析。**
+
+```java
+//生成json时将userRoles属性过滤
+@JsonIgnoreProperties({"userRoles"})
+public class User {
+
+    private String userName;
+    private String fullName;
+    private String password;
+    private List<UserRole> userRoles = new ArrayList<>();
+}
+```
+
+**`@JsonIgnore`一般用于类的属性上，作用和上面的`@JsonIgnoreProperties` 一样。**
+
+```java
+public class User {
+
+    private String userName;
+    private String fullName;
+    private String password;
+   //生成json时将userRoles属性过滤
+    @JsonIgnore
+    private List<UserRole> userRoles = new ArrayList<>();
+}
+```
+
+#### 10.2. 格式化 json 数据
+
+`@JsonFormat`一般用来格式化 json 数据。
+
+比如：
+
+```java
+@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="GMT")
+private Date date;
+```
+
+#### 10.3. 扁平化对象
+
+```java
+@Getter
+@Setter
+@ToString
+public class Account {
+    private Location location;
+    private PersonInfo personInfo;
+
+  @Getter
+  @Setter
+  @ToString
+  public static class Location {
+     private String provinceName;
+     private String countyName;
+  }
+  @Getter
+  @Setter
+  @ToString
+  public static class PersonInfo {
+    private String userName;
+    private String fullName;
+  }
+}
+
+```
+
+未扁平化之前：
+
+```json
+{
+  "location": {
+    "provinceName": "湖北",
+    "countyName": "武汉"
+  },
+  "personInfo": {
+    "userName": "coder1234",
+    "fullName": "shaungkou"
+  }
+}
+```
+
+使用`@JsonUnwrapped` 扁平对象之后：
+
+```java
+@Getter
+@Setter
+@ToString
+public class Account {
+    @JsonUnwrapped
+    private Location location;
+    @JsonUnwrapped
+    private PersonInfo personInfo;
+    ......
+}
+```
+
+```json
+{
+  "provinceName": "湖北",
+  "countyName": "武汉",
+  "userName": "coder1234",
+  "fullName": "shaungkou"
+}
+```
+
+### 11. 测试相关
+
+**`@ActiveProfiles`一般作用于测试类上， 用于声明生效的 Spring 配置文件。**
+
+```java
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
+@Slf4j
+public abstract class TestBase {
+  ......
+}
+```
+
+**`@Test`声明一个方法为测试方法**
+
+**`@Transactional`被声明的测试方法的数据会回滚，避免污染测试数据。**
+
+**`@WithMockUser` Spring Security 提供的，用来模拟一个真实用户，并且可以赋予权限。**
+
+```java
+    @Test
+    @Transactional
+    @WithMockUser(username = "user-id-18163138155", authorities = "ROLE_TEACHER")
+    void should_import_student_success() throws Exception {
+        ......
+    }
+```
+
+
+
+## Spring事务
+
+### 什么是事务？
+
+**事务是逻辑上的一组操作，要么都执行，要么都不执行。**
+
+相信大家应该都能背上面这句话了，下面我结合我们日常的真实开发来谈一谈。
+
+我们系统的每个业务方法可能包括了多个原子性的数据库操作，比如下面的 `savePerson()` 方法中就有两个原子性的数据库操作。这些原子性的数据库操作是有依赖的，它们要么都执行，要不就都不执行。
+
+```java
+	public void savePerson() {
+		personDao.save(person);
+		personDetailDao.save(personDetail);
+	}
+```
+
+另外，需要格外注意的是：**事务能否生效数据库引擎是否支持事务是关键。比如常用的 MySQL 数据库默认使用支持事务的 `innodb`引擎。但是，如果把数据库引擎变为 `myisam`，那么程序也就不再支持事务了！**
+
+事务最经典也经常被拿出来说例子就是转账了。假如小明要给小红转账 1000 元，这个转账会涉及到两个关键操作就是：
+
+> 1. 将小明的余额减少 1000 元。
+> 2. 将小红的余额增加 1000 元。
+
+万一在这两个操作之间突然出现错误比如银行系统崩溃或者网络故障，导致小明余额减少而小红的余额没有增加，这样就不对了。事务就是保证这两个关键操作要么都成功，要么都要失败。
+
+![事务示意图](https://oss.javaguide.cn/github/javaguide/mysql/%E4%BA%8B%E5%8A%A1%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
+
+```java
+public class OrdersService {
+	private AccountDao accountDao;
+
+	public void setOrdersDao(AccountDao accountDao) {
+		this.accountDao = accountDao;
+	}
+
+  @Transactional(propagation = Propagation.REQUIRED,
+                isolation = Isolation.DEFAULT, readOnly = false, timeout = -1)
+	public void accountMoney() {
+    //小红账户多1000
+		accountDao.addMoney(1000,xiaohong);
+		//模拟突然出现的异常，比如银行中可能为突然停电等等
+    //如果没有配置事务管理的话会造成，小红账户多了1000而小明账户没有少钱
+		int i = 10 / 0;
+		//小王账户少1000
+		accountDao.reduceMoney(1000,xiaoming);
+	}
+}
+```
+
+另外，数据库事务的 ACID 四大特性是事务的基础，下面简单来了解一下。
+
+## 事务的特性（ACID）了解么?
+
+1. **原子性**（`Atomicity`）：事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，要么完全不起作用；
+2. **一致性**（`Consistency`）：执行事务前后，数据保持一致，例如转账业务中，无论事务是否成功，转账者和收款人的总额应该是不变的；
+3. **隔离性**（`Isolation`）：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数据库是独立的；
+4. **持久性**（`Durability`）：一个事务被提交之后。它对数据库中数据的改变是持久的，即使数据库发生故障也不应该对其有任何影响。
+
+🌈 这里要额外补充一点：**只有保证了事务的持久性、原子性、隔离性之后，一致性才能得到保障。也就是说 A、I、D 是手段，C 是目的！** ![AID->C](https://oss.javaguide.cn/github/javaguide/mysql/AID->C.png)
+
+另外，DDIA 也就是 [《Designing Data-Intensive Application（数据密集型应用系统设计）》](https://book.douban.com/subject/30329536/) 的作者在他的这本书中如是说：
+
+> Atomicity, isolation, and durability are properties of the database, whereas consis‐ tency (in the ACID sense) is a property of the application. The application may rely on the database’s atomicity and isolation properties in order to achieve consistency, but it’s not up to the database alone.
+>
+> 翻译过来的意思是：原子性，隔离性和持久性是数据库的属性，而一致性（在 ACID 意义上）是应用程序的属性。应用可能依赖数据库的原子性和隔离属性来实现一致性，但这并不仅取决于数据库。因此，字母 C 不属于 ACID 。
+
+## 详谈 Spring 对事务的支持
+
+> ⚠️ 再提醒一次：你的程序是否支持事务首先取决于数据库 ，比如使用 MySQL 的话，如果你选择的是 innodb 引擎，那么恭喜你，是可以支持事务的。但是，如果你的 MySQL 数据库使用的是 myisam 引擎的话，那不好意思，从根上就是不支持事务的。
+
+这里再多提一下一个非常重要的知识点：**MySQL 怎么保证原子性的？**
+
+我们知道如果想要保证事务的原子性，就需要在异常发生时，对已经执行的操作进行**回滚**，在 MySQL 中，恢复机制是通过 **回滚日志（undo log）** 实现的，所有事务进行的修改都会先记录到这个回滚日志中，然后再执行相关的操作。如果执行过程中遇到异常的话，我们直接利用 **回滚日志** 中的信息将数据回滚到修改之前的样子即可！并且，回滚日志会先于数据持久化到磁盘上。这样就保证了即使遇到数据库突然宕机等情况，当用户再次启动数据库的时候，数据库还能够通过查询回滚日志来回滚之前未完成的事务。
+
+### Spring 支持两种方式的事务管理
+
+#### 编程式事务管理
+
+通过 `TransactionTemplate`或者`TransactionManager`手动管理事务，实际应用中很少使用，但是对于你理解 Spring 事务管理原理有帮助。
+
+使用`TransactionTemplate` 进行编程式事务管理的示例代码如下：
+
+```java
+@Autowired
+private TransactionTemplate transactionTemplate;
+public void testTransaction() {
+
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+
+                try {
+
+                    // ....  业务代码
+                } catch (Exception e){
+                    //回滚
+                    transactionStatus.setRollbackOnly();
+                }
+
+            }
+        });
+}
+```
+
+使用 `TransactionManager` 进行编程式事务管理的示例代码如下：
+
+```java
+@Autowired
+private PlatformTransactionManager transactionManager;
+
+public void testTransaction() {
+
+  TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+          try {
+               // ....  业务代码
+              transactionManager.commit(status);
+          } catch (Exception e) {
+              transactionManager.rollback(status);
+          }
+}
+```
+
+#### 声明式事务管理
+
+推荐使用（代码侵入性最小），实际是通过 AOP 实现（基于`@Transactional` 的全注解方式使用最多）。
+
+使用 `@Transactional`注解进行事务管理的示例代码如下：
+
+```java
+@Transactional(propagation = Propagation.REQUIRED)
+public void aMethod {
+  //do something
+  B b = new B();
+  C c = new C();
+  b.bMethod();
+  c.cMethod();
+}
+```
+
+### Spring 事务管理接口介绍
+
+Spring 框架中，事务管理相关最重要的 3 个接口如下：
+
+- **`PlatformTransactionManager`**：（平台）事务管理器，Spring 事务策略的核心。
+- **`TransactionDefinition`**：事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
+- **`TransactionStatus`**：事务运行状态。
+
+我们可以把 **`PlatformTransactionManager`** 接口可以被看作是事务上层的管理者，而 **`TransactionDefinition`** 和 **`TransactionStatus`** 这两个接口可以看作是事务的描述。
+
+**`PlatformTransactionManager`** 会根据 **`TransactionDefinition`** 的定义比如事务超时时间、隔离级别、传播行为等来进行事务管理 ，而 **`TransactionStatus`** 接口则提供了一些方法来获取事务相应的状态比如是否新事务、是否可以回滚等等。
+
+#### PlatformTransactionManager:事务管理接口
+
+**Spring 并不直接管理事务，而是提供了多种事务管理器** 。Spring 事务管理器的接口是：**`PlatformTransactionManager`** 。
+
+通过这个接口，Spring 为各个平台如：JDBC(`DataSourceTransactionManager`)、Hibernate(`HibernateTransactionManager`)、JPA(`JpaTransactionManager`)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
+
+**`PlatformTransactionManager` 接口的具体实现如下:**
+
+![](image/PlatformTransactionManager.png)
+
+`PlatformTransactionManager`接口中定义了三个方法：
+
+```java
+package org.springframework.transaction;
+
+import org.springframework.lang.Nullable;
+
+public interface PlatformTransactionManager {
+    //获得事务
+    TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
+    //提交事务
+    void commit(TransactionStatus var1) throws TransactionException;
+    //回滚事务
+    void rollback(TransactionStatus var1) throws TransactionException;
+}
+
+```
+
+**这里多插一嘴。为什么要定义或者说抽象出来`PlatformTransactionManager`这个接口呢？**
+
+主要是因为要将事务管理行为抽象出来，然后不同的平台去实现它，这样我们可以保证提供给外部的行为不变，方便我们扩展。
+
+#### TransactionDefinition:事务属性
+
+事务管理器接口 **`PlatformTransactionManager`** 通过 **`getTransaction(TransactionDefinition definition)`** 方法来得到一个事务，这个方法里面的参数是 **`TransactionDefinition`** 类 ，这个类就定义了一些基本的事务属性。
+
+**什么是事务属性呢？** 事务属性可以理解成事务的一些基本配置，描述了事务策略如何应用到方法上。
+
+事务属性包含了 5 个方面：
+
+- 隔离级别
+- 传播行为
+- 回滚规则
+- 是否只读
+- 事务超时
+
+`TransactionDefinition` 接口中定义了 5 个方法以及一些表示事务属性的常量比如隔离级别、传播行为等等。
+
+```java
+package org.springframework.transaction;
+
+import org.springframework.lang.Nullable;
+
+public interface TransactionDefinition {
+    int PROPAGATION_REQUIRED = 0;
+    int PROPAGATION_SUPPORTS = 1;
+    int PROPAGATION_MANDATORY = 2;
+    int PROPAGATION_REQUIRES_NEW = 3;
+    int PROPAGATION_NOT_SUPPORTED = 4;
+    int PROPAGATION_NEVER = 5;
+    int PROPAGATION_NESTED = 6;
+    int ISOLATION_DEFAULT = -1;
+    int ISOLATION_READ_UNCOMMITTED = 1;
+    int ISOLATION_READ_COMMITTED = 2;
+    int ISOLATION_REPEATABLE_READ = 4;
+    int ISOLATION_SERIALIZABLE = 8;
+    int TIMEOUT_DEFAULT = -1;
+    // 返回事务的传播行为，默认值为 REQUIRED。
+    int getPropagationBehavior();
+    //返回事务的隔离级别，默认值是 DEFAULT
+    int getIsolationLevel();
+    // 返回事务的超时时间，默认值为-1。如果超过该时间限制但事务还没有完成，则自动回滚事务。
+    int getTimeout();
+    // 返回是否为只读事务，默认值为 false
+    boolean isReadOnly();
+
+    @Nullable
+    String getName();
+}
+```
+
+#### TransactionStatus:事务状态
+
+`TransactionStatus`接口用来记录事务的状态 该接口定义了一组方法,用来获取或判断事务的相应状态信息。
+
+`PlatformTransactionManager.getTransaction(…)`方法返回一个 `TransactionStatus` 对象。
+
+**TransactionStatus 接口内容如下：**
+
+```java
+public interface TransactionStatus{
+    boolean isNewTransaction(); // 是否是新的事务
+    boolean hasSavepoint(); // 是否有恢复点
+    void setRollbackOnly();  // 设置为只回滚
+    boolean isRollbackOnly(); // 是否为只回滚
+    boolean isCompleted; // 是否已完成
+}
+```
+
+### 事务属性详解
+
+实际业务开发中，大家一般都是使用 `@Transactional` 注解来开启事务，但很多人并不清楚这个注解里面的参数是什么意思，有什么用。为了更好的在项目中使用事务管理，强烈推荐好好阅读一下下面的内容。
+
+#### 事务传播行为
+
+**事务传播行为是为了解决业务层方法之间互相调用的事务问题**。
+
+当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行。
+
+举个例子：我们在 A 类的`aMethod()`方法中调用了 B 类的 `bMethod()` 方法。这个时候就涉及到业务层方法之间互相调用的事务问题。如果我们的 `bMethod()`如果发生异常需要回滚，如何配置事务传播行为才能让 `aMethod()`也跟着回滚呢？这个时候就需要事务传播行为的知识了，如果你不知道的话一定要好好看一下。
+
+```java
+@Service
+Class A {
+    @Autowired
+    B b;
+    @Transactional(propagation = Propagation.xxx)
+    public void aMethod {
+        //do something
+        b.bMethod();
+    }
+}
+
+@Service
+Class B {
+    @Transactional(propagation = Propagation.xxx)
+    public void bMethod {
+       //do something
+    }
+}
+```
+
+在`TransactionDefinition`定义中包括了如下几个表示传播行为的常量：
+
+```java
+public interface TransactionDefinition {
+    int PROPAGATION_REQUIRED = 0;
+    int PROPAGATION_SUPPORTS = 1;
+    int PROPAGATION_MANDATORY = 2;
+    int PROPAGATION_REQUIRES_NEW = 3;
+    int PROPAGATION_NOT_SUPPORTED = 4;
+    int PROPAGATION_NEVER = 5;
+    int PROPAGATION_NESTED = 6;
+    ......
+}
+```
+
+不过，为了方便使用，Spring 相应地定义了一个枚举类：`Propagation`
+
+```java
+package org.springframework.transaction.annotation;
+
+import org.springframework.transaction.TransactionDefinition;
+
+public enum Propagation {
+
+    REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
+
+    SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
+
+    MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
+
+    REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
+
+    NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
+
+    NEVER(TransactionDefinition.PROPAGATION_NEVER),
+
+    NESTED(TransactionDefinition.PROPAGATION_NESTED);
+
+    private final int value;
+
+    Propagation(int value) {
+        this.value = value;
+    }
+
+    public int value() {
+        return this.value;
+    }
+
+}
+
+```
+
+**正确的事务传播行为可能的值如下**：
+
+**1.`TransactionDefinition.PROPAGATION_REQUIRED`**
+
+使用的最多的一个事务传播行为，我们平时经常使用的`@Transactional`注解默认使用就是这个事务传播行为。如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。也就是说：
+
+- 如果外部方法没有开启事务的话，`Propagation.REQUIRED`修饰的内部方法会新开启自己的事务，且开启的事务相互独立，互不干扰。
+- 如果外部方法开启事务并且被`Propagation.REQUIRED`的话，所有`Propagation.REQUIRED`修饰的内部方法和外部方法均属于同一事务 ，只要一个方法回滚，整个事务均回滚。
+
+举个例子：如果我们上面的`aMethod()`和`bMethod()`使用的都是`PROPAGATION_REQUIRED`传播行为的话，两者使用的就是同一个事务，只要其中一个方法回滚，整个事务均回滚。
+
+```java
+@Service
+Class A {
+    @Autowired
+    B b;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void aMethod {
+        //do something
+        b.bMethod();
+    }
+}
+@Service
+Class B {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void bMethod {
+       //do something
+    }
+}
+```
+
+**`2.TransactionDefinition.PROPAGATION_REQUIRES_NEW`**
+
+创建一个新的事务，如果当前存在事务，则把当前事务挂起。也就是说不管外部方法是否开启事务，`Propagation.REQUIRES_NEW`修饰的内部方法会新开启自己的事务，且开启的事务相互独立，互不干扰。
+
+举个例子：如果我们上面的`bMethod()`使用`PROPAGATION_REQUIRES_NEW`事务传播行为修饰，`aMethod`还是用`PROPAGATION_REQUIRED`修饰的话。如果`aMethod()`发生异常回滚，`bMethod()`不会跟着回滚，因为 `bMethod()`开启了独立的事务。但是，如果 `bMethod()`抛出了未被捕获的异常并且这个异常满足事务回滚规则的话,`aMethod()`同样也会回滚，因为这个异常被 `aMethod()`的事务管理机制检测到了。
+
+```java
+@Service
+Class A {
+    @Autowired
+    B b;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void aMethod {
+        //do something
+        b.bMethod();
+    }
+}
+
+@Service
+Class B {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void bMethod {
+       //do something
+    }
+}
+```
+
+**3.`TransactionDefinition.PROPAGATION_NESTED`**:
+
+如果当前存在事务，就在嵌套事务内执行；如果当前没有事务，就执行与`TransactionDefinition.PROPAGATION_REQUIRED`类似的操作。也就是说：
+
+- 在外部方法开启事务的情况下，在内部开启一个新的事务，作为嵌套事务存在。
+- 如果外部方法无事务，则单独开启一个事务，与 `PROPAGATION_REQUIRED` 类似。
+
+这里还是简单举个例子：如果 `bMethod()` 回滚的话，`aMethod()`不会回滚。如果 `aMethod()` 回滚的话，`bMethod()`会回滚。
+
+```java
+@Service
+Class A {
+    @Autowired
+    B b;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void aMethod {
+        //do something
+        b.bMethod();
+    }
+}
+
+@Service
+Class B {
+    @Transactional(propagation = Propagation.NESTED)
+    public void bMethod {
+       //do something
+    }
+}
+```
+
+**4.`TransactionDefinition.PROPAGATION_MANDATORY`**
+
+如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。（mandatory：强制性）
+
+这个使用的很少，就不举例子来说了。
+
+**若是错误的配置以下 3 种事务传播行为，事务将不会发生回滚，这里不对照案例讲解了，使用的很少。**
+
+- **`TransactionDefinition.PROPAGATION_SUPPORTS`**: 如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。
+- **`TransactionDefinition.PROPAGATION_NOT_SUPPORTED`**: 以非事务方式运行，如果当前存在事务，则把当前事务挂起。
+- **`TransactionDefinition.PROPAGATION_NEVER`**: 以非事务方式运行，如果当前存在事务，则抛出异常。
+
+#### 事务隔离级别
+
+`TransactionDefinition` 接口中定义了五个表示隔离级别的常量：
+
+```java
+public interface TransactionDefinition {
+    ......
+    int ISOLATION_DEFAULT = -1;
+    int ISOLATION_READ_UNCOMMITTED = 1;
+    int ISOLATION_READ_COMMITTED = 2;
+    int ISOLATION_REPEATABLE_READ = 4;
+    int ISOLATION_SERIALIZABLE = 8;
+    ......
+}
+```
+
+和事务传播行为那块一样，为了方便使用，Spring 也相应地定义了一个枚举类：`Isolation`
+
+```java
+public enum Isolation {
+
+  DEFAULT(TransactionDefinition.ISOLATION_DEFAULT),
+
+  READ_UNCOMMITTED(TransactionDefinition.ISOLATION_READ_UNCOMMITTED),
+
+  READ_COMMITTED(TransactionDefinition.ISOLATION_READ_COMMITTED),
+
+  REPEATABLE_READ(TransactionDefinition.ISOLATION_REPEATABLE_READ),
+
+  SERIALIZABLE(TransactionDefinition.ISOLATION_SERIALIZABLE);
+
+  private final int value;
+
+  Isolation(int value) {
+    this.value = value;
+  }
+
+  public int value() {
+    return this.value;
+  }
+
+}
+```
+
+下面我依次对每一种事务隔离级别进行介绍：
+
+- **`TransactionDefinition.ISOLATION_DEFAULT`** :使用后端数据库默认的隔离级别，MySQL 默认采用的 `REPEATABLE_READ` 隔离级别 Oracle 默认采用的 `READ_COMMITTED` 隔离级别.
+- **`TransactionDefinition.ISOLATION_READ_UNCOMMITTED`** :最低的隔离级别，使用这个隔离级别很少，因为它允许读取尚未提交的数据变更，**可能会导致脏读、幻读或不可重复读**
+- **`TransactionDefinition.ISOLATION_READ_COMMITTED`** : 允许读取并发事务已经提交的数据，**可以阻止脏读，但是幻读或不可重复读仍有可能发生**
+- **`TransactionDefinition.ISOLATION_REPEATABLE_READ`** : 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，**可以阻止脏读和不可重复读，但幻读仍有可能发生。**
+- **`TransactionDefinition.ISOLATION_SERIALIZABLE`** : 最高的隔离级别，完全服从 ACID 的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，**该级别可以防止脏读、不可重复读以及幻读**。但是这将严重影响程序的性能。通常情况下也不会用到该级别。
+
+#### 事务超时属性
+
+所谓事务超时，就是指一个事务所允许执行的最长时间，如果超过该时间限制但事务还没有完成，则自动回滚事务。在 `TransactionDefinition` 中以 int 的值来表示超时时间，其单位是秒，默认值为-1，这表示事务的超时时间取决于底层事务系统或者没有超时时间。
+
+#### 事务只读属性
+
+```java
+package org.springframework.transaction;
+
+import org.springframework.lang.Nullable;
+
+public interface TransactionDefinition {
+    ......
+    // 返回是否为只读事务，默认值为 false
+    boolean isReadOnly();
+
+}
+```
+
+对于只有读取数据查询的事务，可以指定事务类型为 readonly，即只读事务。只读事务不涉及数据的修改，数据库会提供一些优化手段，适合用在有多条数据库查询操作的方法中。
+
+很多人就会疑问了，为什么我一个数据查询操作还要启用事务支持呢？
+
+拿 MySQL 的 innodb 举例子，根据官网 [https://dev.mysql.com/doc/refman/5.7/en/innodb-autocommit-commit-rollback.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-autocommit-commit-rollback.html) 描述：
+
+> MySQL 默认对每一个新建立的连接都启用了`autocommit`模式。在该模式下，每一个发送到 MySQL 服务器的`sql`语句都会在一个单独的事务中进行处理，执行结束后会自动提交事务，并开启一个新的事务。
+
+但是，如果你给方法加上了`Transactional`注解的话，这个方法执行的所有`sql`会被放在一个事务中。如果声明了只读事务的话，数据库就会去优化它的执行，并不会带来其他的什么收益。
+
+如果不加`Transactional`，每条`sql`会开启一个单独的事务，中间被其它事务改了数据，都会实时读取到最新值。
+
+分享一下关于事务只读属性，其他人的解答：
+
+- 如果你一次执行单条查询语句，则没有必要启用事务支持，数据库默认支持 SQL 执行期间的读一致性；
+- 如果你一次执行多条查询语句，例如统计查询，报表查询，在这种场景下，多条查询 SQL 必须保证整体的读一致性，否则，在前条 SQL 查询之后，后条 SQL 查询之前，数据被其他用户改变，则该次整体的统计查询将会出现读数据不一致的状态，此时，应该启用事务支持
+
+#### 事务回滚规则
+
+这些规则定义了哪些异常会导致事务回滚而哪些不会。默认情况下，事务只有遇到运行期异常（`RuntimeException` 的子类）时才会回滚，`Error` 也会导致事务回滚，但是，在遇到检查型（Checked）异常时不会回滚。
+
+![](image/roollbackFor.png)
+
+如果你想要回滚你定义的特定的异常类型的话，可以这样：
+
+```java
+@Transactional(rollbackFor= MyException.class)
+```
+
+### @Transactional 注解使用详解
+
+#### `@Transactional` 的作用范围
+
+1. **方法**：推荐将注解使用于方法上，不过需要注意的是：**该注解只能应用到 public 方法上，否则不生效。**
+2. **类**：如果这个注解使用在类上的话，表明该注解对该类中所有的 public 方法都生效。
+3. **接口**：不推荐在接口上使用。
+
+#### `@Transactional` 的常用配置参数
+
+`@Transactional`注解源码如下，里面包含了基本事务属性的配置：
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Transactional {
+
+	@AliasFor("transactionManager")
+	String value() default "";
+
+	@AliasFor("value")
+	String transactionManager() default "";
+
+	Propagation propagation() default Propagation.REQUIRED;
+
+	Isolation isolation() default Isolation.DEFAULT;
+
+	int timeout() default TransactionDefinition.TIMEOUT_DEFAULT;
+
+	boolean readOnly() default false;
+
+	Class<? extends Throwable>[] rollbackFor() default {};
+
+	String[] rollbackForClassName() default {};
+
+	Class<? extends Throwable>[] noRollbackFor() default {};
+
+	String[] noRollbackForClassName() default {};
+
+}
+```
+
+**`@Transactional` 的常用配置参数总结（只列出了 5 个我平时比较常用的）：**
+
+| 属性名      | 说明                                                         |
+| :---------- | :----------------------------------------------------------- |
+| propagation | 事务的传播行为，默认值为 REQUIRED，可选的值在上面介绍过      |
+| isolation   | 事务的隔离级别，默认值采用 DEFAULT，可选的值在上面介绍过     |
+| timeout     | 事务的超时时间，默认值为-1（不会超时）。如果超过该时间限制但事务还没有完成，则自动回滚事务。 |
+| readOnly    | 指定事务是否为只读事务，默认值为 false。                     |
+| rollbackFor | 用于指定能够触发事务回滚的异常类型，并且可以指定多个异常类型。 |
+
+#### `@Transactional` 事务注解原理
+
+面试中在问 AOP 的时候可能会被问到的一个问题。简单说下吧！
+
+我们知道，**`@Transactional` 的工作机制是基于 AOP 实现的，AOP 又是使用动态代理实现的。如果目标对象实现了接口，默认情况下会采用 JDK 的动态代理，如果目标对象没有实现了接口,会使用 CGLIB 动态代理。**
+
+🤐 多提一嘴：`createAopProxy()` 方法 决定了是使用 JDK 还是 Cglib 来做动态代理，源码如下：
+
+```java
+public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
+
+	@Override
+	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+			Class<?> targetClass = config.getTargetClass();
+			if (targetClass == null) {
+				throw new AopConfigException("TargetSource cannot determine target class: " +
+						"Either an interface or a target is required for proxy creation.");
+			}
+			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+				return new JdkDynamicAopProxy(config);
+			}
+			return new ObjenesisCglibAopProxy(config);
+		}
+		else {
+			return new JdkDynamicAopProxy(config);
+		}
+	}
+  .......
+}
+```
+
+如果一个类或者一个类中的 public 方法上被标注`@Transactional` 注解的话，Spring 容器就会在启动的时候为其创建一个代理类，在调用被`@Transactional` 注解的 public 方法的时候，实际调用的是，`TransactionInterceptor` 类中的 `invoke()`方法。这个方法的作用就是在目标方法之前开启事务，方法执行过程中如果遇到异常的时候回滚事务，方法调用完成之后提交事务。
+
+> `TransactionInterceptor` 类中的 `invoke()`方法内部实际调用的是 `TransactionAspectSupport` 类的 `invokeWithinTransaction()`方法。由于新版本的 Spring 对这部分重写很大，而且用到了很多响应式编程的知识，这里就不列源码了。
+
+#### Spring AOP 自调用问题
+
+
+当一个方法被标记了`@Transactional` 注解的时候，Spring 事务管理器只会在被其他类方法调用的时候生效，而不会在一个类中方法调用生效。
+
+这是因为 Spring AOP 工作原理决定的。因为 Spring AOP 使用动态代理来实现事务的管理，它会在运行的时候为带有 `@Transactional` 注解的方法生成代理对象，并在方法调用的前后应用事物逻辑。如果该方法被其他类调用我们的代理对象就会拦截方法调用并处理事务。但是在一个类中的其他方法内部调用的时候，我们代理对象就无法拦截到这个内部调用，因此事务也就失效了。
+
+`MyService` 类中的`method1()`调用`method2()`就会导致`method2()`的事务失效。
+
+```java
+@Service
+public class MyService {
+
+private void method1() {
+     method2();
+     //......
+}
+@Transactional
+ public void method2() {
+     //......
+  }
+}
+```
+
+解决办法就是避免同一类中自调用或者使用 AspectJ 取代 Spring AOP 代理。
+
+#### `@Transactional` 的使用注意事项总结
+
+- `@Transactional` 注解只有作用到 public 方法上事务才生效，不推荐在接口上使用；
+- 避免同一个类中调用 `@Transactional` 注解的方法，这样会导致事务失效；
+- 正确的设置 `@Transactional` 的 `rollbackFor` 和 `propagation` 属性，否则事务可能会回滚失败;
+- 被 `@Transactional` 注解的方法所在的类必须被 Spring 管理，否则不生效；
+- 底层使用的数据库必须支持事务机制，否则不生效；
+- ......
